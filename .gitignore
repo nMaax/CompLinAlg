@@ -160,3 +160,116 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# MATLAB specific
+# Temporary MATLAB files
+*.asv
+*.bak
+*.swp
+*.old
+*.log
+*.m~
+
+# MATLAB MATLAB session files
+matlab_history.xml
+matlab.prf
+
+# MATLAB saved workspace
+*.mat
+
+# MATLAB preferences
+*.mlappinstall
+
+# MATLAB code generation (C/C++/Fortran)
+*.mex*
+*.tmf
+*.obj
+*.dll
+*.dylib
+*.so
+*.out
+
+# MATLAB reports
+*.pdf
+*.html
+*.htm
+
+# MATLAB compiled code (production)
+*.ctf
+
+# MATLAB data files
+*.fig
+*.mexa64
+*.mexw64
+*.mexmaci64
+
+# Jupyter Notebooks (if using MATLAB kernel in Jupyter)
+.ipynb_checkpoints
+
+# MATLAB Editor backups and autosave files
+*.autosave
+*.bak
+
+# MATLAB Profiler
+profile_results/
+
+# Simulink files
+*.slx
+*.mdl
+
+# MATLAB compiled files
+*.mex
+*.mexw64
+*.mexa64
+*.mexmaci
+*.mexb
+
+# MATLAB binary files
+*.mat
+*.fig
+*.p
+
+# MATLAB preferences
+*.mlapp
+*.mlproj
+
+# MATLAB's cache and temp files
+*.mex
+*.log
+*.asv
+*.bak
+*.swp
+*.swo
+
+# MATLAB workspace and figure settings
+*.mat
+*.fig
+*.mdl
+*.slx
+
+# MATLAB user settings
+userPrefs.mat
+
+# Folder with generated files
+/private/
+build/
+bin/
+cache/
+tmp/
+
+# Ignore the backup and undo files
+*_undo.m
+*_backup.m
+
+# MATLAB's generated files
+*.slxc
+*.sldd
+*.slb
+
+# Ignore IDE specific files
+.idea/
+.vscode/
+
+# System-specific files
+.DS_Store
+Thumbs.db
