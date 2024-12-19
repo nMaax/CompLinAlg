@@ -37,8 +37,9 @@ S = S + S';
 
 %% Construct K-Nearest Neighbors (KNN)
 % Allocate space for the KNN matrix (n x k)
-KNN = zeros(n, 3);
-k = 3; % Set the number of neighbors to 3
+
+k = 10; % Set the number of neighbors to [10, 20, 40]
+KNN = zeros(n, k);
 
 for i = 1:n
     % Get the row of the similarity matrix for the i-th point
