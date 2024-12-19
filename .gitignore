@@ -161,107 +161,37 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# MATLAB specific
-# Temporary MATLAB files
+# Windows default autosave extension
 *.asv
-*.bak
-*.swp
-*.old
-*.log
+
+# OSX / *nix default autosave extension
 *.m~
 
-# MATLAB MATLAB session files
-matlab_history.xml
-matlab.prf
-
-# MATLAB preferences
-*.mlappinstall
-
-# MATLAB code generation (C/C++/Fortran)
+# Compiled MEX binaries (all platforms)
 *.mex*
-*.tmf
-*.obj
-*.dll
-*.dylib
-*.so
-*.out
 
-# MATLAB reports
-*.pdf
-*.html
-*.htm
+# Packaged app and toolbox files
+*.mlappinstall
+*.mltbx
 
-# MATLAB compiled code (production)
-*.ctf
+# Generated helpsearch folders
+helpsearch*/
 
-# MATLAB data files
-*.fig
-*.mexa64
-*.mexw64
-*.mexmaci64
+# Simulink code generation folders
+slprj/
+sccprj/
 
-# Jupyter Notebooks (if using MATLAB kernel in Jupyter)
-.ipynb_checkpoints
+# Matlab code generation folders
+codegen/
 
-# MATLAB Editor backups and autosave files
+# Simulink autosave extension
 *.autosave
-*.bak
 
-# MATLAB Profiler
-profile_results/
-
-# Simulink files
-*.slx
-*.mdl
-
-# MATLAB compiled files
-*.mex
-*.mexw64
-*.mexa64
-*.mexmaci
-*.mexb
-
-# MATLAB binary files
-*.mat
-*.fig
-*.p
-
-# MATLAB preferences
-*.mlapp
-*.mlproj
-
-# MATLAB's cache and temp files
-*.mex
-*.log
-*.asv
-*.bak
-*.swp
-*.swo
-
-# MATLAB workspace and figure settings
-*.mat
-*.fig
-*.mdl
-*.slx
-
-# MATLAB user settings
-userPrefs.mat
-
-# Folder with generated files
-/private/
-build/
-bin/
-cache/
-tmp/
-
-# Ignore the backup and undo files
-*_undo.m
-*_backup.m
-
-# MATLAB's generated files
+# Simulink cache files
 *.slxc
-*.sldd
-*.slb
+
+# Octave session info
+octave-workspace
 
 # Ignore IDE specific files
 .idea/
