@@ -1,7 +1,7 @@
 %% TODO
 % - [ ] Sparsity storage of matrices
 % - [ ] Implementation of power and inverse power methods
-% - [ ] 
+% - [ ] Point 5 and on
 %% Initialization and Data Loading
 clear; clc; close all;
 
