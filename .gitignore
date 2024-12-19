@@ -174,9 +174,6 @@ cython_debug/
 matlab_history.xml
 matlab.prf
 
-# MATLAB saved workspace
-*.mat
-
 # MATLAB preferences
 *.mlappinstall
 
