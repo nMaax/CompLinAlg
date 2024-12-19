@@ -1,3 +1,7 @@
+%% TODO
+% - [ ] Sparsity storage of matrices
+% - [ ] Implementation of power and inverse power methods
+% - [ ] 
 %% Initialization and Data Loading
 clear; clc; close all;
 
@@ -54,21 +58,52 @@ for i = 1:n
     % fprintf('%d knn are [%d, %d, %d]\n', i, knn);
 end
 
-%% Construct Weighted Adjacency Matrix W
+%% Construct Weighted Adjacency Matrix W and Degree Matrix D
 % Allocate space for the weighted adjacency matrix W (n x n)
 W = zeros(n, n);
-
+B = zeros(n, n);
 for i = 1:n
     % Get the K nearest neighbors of the i-th point
     neigh_of_i = KNN(i, :);
     
     % Assign the corresponding similarity values to the adjacency matrix W
+    B(i, neigh_of_i) = ones(1, length(neigh_of_i));
     W(i, neigh_of_i) = S(i, neigh_of_i);
+    
+    B(neigh_of_i, i) = ones(length(neigh_of_i), 1);
+    W(neigh_of_i, i) = S(neigh_of_i, i);
 end
+D = diag(sum(B));
+
+% Plot the sparsity pattern of D (diagonal matrix)
+% figure;
+% spy(D);
 
 % Plot the sparsity pattern of W
 % figure;
 % spy(W);
+
+%% Construct Laplacian Matrix L = D - W
+L = D - W;
+
+% Plot the sparsity pattern of L
+% figure;
+% spy(L);
+
+%% Number of connected components
+
+% Create a graph from the adjacency matrix
+G = graph(L);
+
+% Compute the connected components
+% conncomp returns the component index for each node
+components = conncomp(G);
+
+% The number of connected components is the number of unique component indices
+num_components = max(components);
+
+% Display the connected components
+disp(['Number of connected components: ', num2str(num_components)]);
 
 %% Final Output
 fprintf('*** End ***\n');
