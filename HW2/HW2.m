@@ -1,7 +1,8 @@
 %% TODO
 % - [ ] Sparsity storage of matrices
+% - [ ] Other data-sets
+% - [ ] Normalized symmetric Laplacian matrix
 % - [ ] Implementation of power and inverse power methods
-% - [ ] Point 5 and on
 
 %% Initialization and Data Loading
 clear; clc; close all;
