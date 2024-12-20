@@ -106,5 +106,38 @@ num_components = max(components);
 % Display the connected components
 disp(['Number of connected components: ', num2str(num_components)]);
 
+%% Perform the M smallest eigenvalues and the corrispective eigenvectors
+[eigenvectors, small_eigenvalues]= eigs(S,43,'smallestabs');
+diagonal_selected_eigenvalues = small_eigenvalues(1:3,1:3);
+U = eigenvectors(:,1:3);
+
+%disp('Selected smallest eigenvalues:');
+%disp(diagonal_selected_eigenvalues);
+
+% Display the corresponding eigenvectors
+%disp('Corresponding eigenvectors:');
+%disp(U);
+
+%% Perform clustering
+
+% Perform k-means clustering
+[idx, C] = kmeans(U, 3); % 'Replicates' helps to find a better solution
+
+% Display the cluster indices for each point
+disp('Cluster indices for each point:');
+disp(idx);
+
+% Plot the original data points colored by cluster assignment
+figure; % Create a new figure
+gscatter(X(:, 1), X(:, 2), idx); % Scatter plot with colors based on cluster index
+xlabel('X-axis'); % Label for the x-axis
+ylabel('Y-axis'); % Label for the y-axis
+title('Original Data Points Colored by Cluster Assignment'); % Title of the plot
+legend('Cluster 1', 'Cluster 2', 'Cluster 3'); % Legend for clusters
+grid on; % Add grid for better readability
+
+%% Final Output
+fprintf('*** End ***\n');
+
 %% Final Output
 fprintf('*** End ***\n');
