@@ -4,6 +4,7 @@
 % - [ ] Point 5 and on
 %% Initialization and Data Loading
 clear; clc; close all;
+aaa = 3
 
 % Load data from 'Circle.mat' where X contains the data points
 load('Circle.mat', 'X'); 
