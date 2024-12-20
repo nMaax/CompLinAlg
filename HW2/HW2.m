@@ -3,6 +3,9 @@
 % - [ ] Other data-sets
 % - [ ] Normalized symmetric Laplacian matrix
 % - [ ] Implementation of power and inverse power methods
+% - [ ] Different clustering techniques in the eigenspace
+% - [ ] Insert a plot for the elbowgraph of 20 eigenvalues magnitudes
+% - [ ] LaTeX report
 
 %% Initialization and Data Loading
 clear; clc; close all;
@@ -97,29 +100,17 @@ M = 3;
 diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M);
 U = eigenvectors(:,1:M);
 
-%disp('Selected smallest eigenvalues:');
-%disp(diagonal_selected_eigenvalues);
-
-% Display the corresponding eigenvectors
-%disp('Corresponding eigenvectors:');
-%disp(U);
-
 %% Perform clustering
 
 % Perform k-means clustering
 [idx, C] = kmeans(U, M); % 'Replicates' helps to find a better solution
-
-% Display the cluster indices for each point
-% disp('Cluster indices for each point:');
-% disp(idx);
 
 % Plot the original data points colored by cluster assignment
 figure; % Create a new figure
 gscatter(X(:, 1), X(:, 2), idx); % Scatter plot with colors based on cluster index
 xlabel('X-axis'); % Label for the x-axis
 ylabel('Y-axis'); % Label for the y-axis
-title('Original Data Points Colored by Cluster Assignment'); % Title of the plot
-legend('Cluster 1', 'Cluster 2', 'Cluster 3'); % Legend for clusters
+title('Spectral clustering'); % Title of the plot
 grid on; % Add grid for better readability
 
 %% Final
