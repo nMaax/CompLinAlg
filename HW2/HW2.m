@@ -107,7 +107,7 @@ num_components = max(components);
 disp(['Number of connected components: ', num2str(num_components)]);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
-[eigenvectors, small_eigenvalues]= eigs(S,43,'smallestabs');
+[eigenvectors, small_eigenvalues]= eigs(L,20,'smallestabs');
 diagonal_selected_eigenvalues = small_eigenvalues(1:3,1:3);
 U = eigenvectors(:,1:3);
 
