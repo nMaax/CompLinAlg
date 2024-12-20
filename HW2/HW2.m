@@ -90,9 +90,12 @@ L = D - W;
 % spy(L);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
-[eigenvectors, small_eigenvalues]= eigs(L,20,'smallestabs');
-diagonal_selected_eigenvalues = small_eigenvalues(1:3,1:3);
-U = eigenvectors(:,1:3);
+
+M = 3;
+
+[eigenvectors, small_eigenvalues]= eigs(L, 20, 'smallestabs');
+diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M);
+U = eigenvectors(:,1:M);
 
 %disp('Selected smallest eigenvalues:');
 %disp(diagonal_selected_eigenvalues);
@@ -102,8 +105,6 @@ U = eigenvectors(:,1:3);
 %disp(U);
 
 %% Perform clustering
-
-M = 3;
 
 % Perform k-means clustering
 [idx, C] = kmeans(U, M); % 'Replicates' helps to find a better solution
