@@ -2,9 +2,9 @@
 % - [ ] Sparsity storage of matrices
 % - [ ] Implementation of power and inverse power methods
 % - [ ] Point 5 and on
+
 %% Initialization and Data Loading
 clear; clc; close all;
-aaa = 3
 
 % Load data from 'Circle.mat' where X contains the data points
 load('Circle.mat', 'X'); 
@@ -24,7 +24,7 @@ sigma = 1; % Define the scale parameter for the Gaussian similarity
 %% Construct Similarity Matrix S
 % Compute the similarity matrix S using a Gaussian function
 for i = 1:n
-    for j = i+1:n
+    for j = 1:n
         Xi = X(i, :); % Get the i-th data point
         Xj = X(j, :); % Get the j-th data point
         
@@ -32,9 +32,6 @@ for i = 1:n
         S(i, j) = exp(-norm(Xi - Xj)^2 / (2 * sigma^2));
     end
 end
-
-% Make the similarity matrix symmetric
-S = S + S';
 
 % Plot the sparsity pattern of S
 % figure;
@@ -74,7 +71,7 @@ for i = 1:n
     B(neigh_of_i, i) = ones(length(neigh_of_i), 1);
     W(neigh_of_i, i) = S(neigh_of_i, i);
 end
-D = diag(sum(B));
+D = diag(sum(W));
 
 % Plot the sparsity pattern of D (diagonal matrix)
 % figure;
@@ -91,21 +88,6 @@ L = D - W;
 % figure;
 % spy(L);
 
-%% Number of connected components
-
-% Create a graph from the adjacency matrix
-G = graph(L);
-
-% Compute the connected components
-% conncomp returns the component index for each node
-components = conncomp(G);
-
-% The number of connected components is the number of unique component indices
-num_components = max(components);
-
-% Display the connected components
-disp(['Number of connected components: ', num2str(num_components)]);
-
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 [eigenvectors, small_eigenvalues]= eigs(L,20,'smallestabs');
 diagonal_selected_eigenvalues = small_eigenvalues(1:3,1:3);
@@ -120,12 +102,14 @@ U = eigenvectors(:,1:3);
 
 %% Perform clustering
 
+M = 3;
+
 % Perform k-means clustering
-[idx, C] = kmeans(U, 3); % 'Replicates' helps to find a better solution
+[idx, C] = kmeans(U, M); % 'Replicates' helps to find a better solution
 
 % Display the cluster indices for each point
-disp('Cluster indices for each point:');
-disp(idx);
+% disp('Cluster indices for each point:');
+% disp(idx);
 
 % Plot the original data points colored by cluster assignment
 figure; % Create a new figure
@@ -136,8 +120,5 @@ title('Original Data Points Colored by Cluster Assignment'); % Title of the plot
 legend('Cluster 1', 'Cluster 2', 'Cluster 3'); % Legend for clusters
 grid on; % Add grid for better readability
 
-%% Final Output
-fprintf('*** End ***\n');
-
-%% Final Output
+%% Final
 fprintf('*** End ***\n');
