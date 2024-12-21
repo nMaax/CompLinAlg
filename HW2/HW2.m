@@ -125,12 +125,12 @@ function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
     s_eigval = inf;
     for i = 1 : max_iter
         % Solve linear system to find the smallest eigenvector of step i
-        s_eigvec_nonorm = (A- p*eye(size(A)))\ s_eigvec;  
+        s_eigvec_nonorm = (A - p * eye(n))\ s_eigvec;
         s_eigvec = s_eigvec_nonorm/ norm(s_eigvec_nonorm);
         previous_eigval = s_eigval;
         s_eigval = s_eigvec' * A * s_eigvec;
-    	if abs((s_eigval - previous_eigval) / s_eigval) < tol
-    		return;
+        if abs((s_eigval - previous_eigval) / s_eigval) < rel_tol
+            return;
         end
         p = s_eigval;
     end
