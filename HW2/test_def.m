@@ -1,4 +1,5 @@
 % Test script for DeflationMethod
+close all; clear; clc;
 
 % Parameters for DeflationMethod
 max_iter = 1000; % Maximum number of iterations

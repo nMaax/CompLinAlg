@@ -12,13 +12,16 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     
     % Initial values for iterating
     i = 1; % Iteration variable
-    Ai = A; % Start with the original matrix
+    B = A; % Start with the original matrix
     P_total = eye(n); % Start with no reflection
     
     % Iteration
     while i <= M
         
         % *** Reflector and eigenpair computing *** %
+        
+        % Update Ai for the following iteration
+        Ai = B(i:end, i:end);
         
         % Extracting eigenvector from the deflated matrix
         [~, x_bar] = InversePowerMethod(Ai, v_0(1:end-(i-1)), p, max_iter, rel_tol); % how to choose v_0, p?
@@ -29,23 +32,29 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         P = blkdiag(eye(i-1), P_bar);
         
         % Extract one eigenvalue
-        B = P * Ai * P;
+        B = P * B * P;
         lambda = B(i, i);
         D(i, i) = lambda; % Save the eigenvalue
         
         % Extract one eigenvector
-        if all(lambda ~= diag(D))
-            % ... (use b1, b2, ...)
-        else
-            % ...
+        % *** Correct eigenvector ***
+        x_correction = zeros(i-1, 1);
+        for j = 1:i-1
+            lambda_prev = D(j, j);
+            if lambda ~= lambda_prev
+                b = ...; % TODO
+                x_correction(j) = - (b_prev' * x_bar) / (lambda_prev - lambda);
+            else
+                x_correction(j) = 0; % Avoid division by zero
+            end
         end
-        x = P_total * [..., x_bar];
+        
+        % Construct the corrected eigenvector
+        x_corrected = [x_correction; x_bar];
+        x = P_total * x_corrected; % Transform back to original space
         V(:, i) = x; % Save the eigenvector
         
         % *** Update for next iteration *** %
-        
-        % Update Ai for next iteration
-        Ai = B(i+1:end, i+1:end);
         
         % Update the total house holder reflector
         P_total = P * P_total;
