@@ -114,13 +114,14 @@ title('Spectral clustering'); % Title of the plot
 grid on; % Add grid for better readability
 
 %% Inverse power method
+% TODO: comment and move to another file
 function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
     % Check if it's a square matrix, otherwise there won't be any eigenvalues
     [n, m] = size(A);
     if n ~= m
         error('Not square matrix')
     end
-    s_eigvec = v_0 / norm(v_0);
+    s_eigvec = v_0 / norm(v_0);     
     s_eigval = inf;
     for i = 1 : max_iter
         % Solve linear system to find the smallest eigenvector of step i
