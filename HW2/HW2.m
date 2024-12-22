@@ -113,6 +113,9 @@ ylabel('Y-axis'); % Label for the y-axis
 title('Spectral clustering'); % Title of the plot
 grid on; % Add grid for better readability
 
+%% Final
+fprintf('*** End ***\n');
+
 %% Inverse power method
 % TODO: comment and move to another file
 function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
@@ -135,6 +138,3 @@ function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
         p = s_eigval;
     end
 end
-
-%% Final
-fprintf('*** End ***\n');
