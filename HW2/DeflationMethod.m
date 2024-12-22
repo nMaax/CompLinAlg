@@ -1,4 +1,4 @@
-function [V,D] = shiftingDeflation(A, M)
+function [V,D] = DeflationMethod(A, M)
 
     n = size(x, 1);
 
