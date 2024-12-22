@@ -2,7 +2,7 @@
 % - [ ] Sparsity storage of matrices
 % - [ ] Other data-sets
 % - [ ] Normalized symmetric Laplacian matrix
-% - [ ] Implementation of power and inverse power methods
+% - [ ] Implementation of inverse power and deflating methods
 % - [ ] Different clustering techniques in the eigenspace
 % - [ ] Insert a plot for the elbowgraph of 20 eigenvalues magnitudes
 % - [ ] LaTeX report
