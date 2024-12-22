@@ -16,6 +16,8 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     P_total = eye(n); % Start with no reflection
     
     % Iteration
+    P_bars = cell(1, M);
+    b_vecs = cell(1, M);
     while i <= M
         
         % *** Reflector and eigenpair computing *** %
@@ -29,30 +31,33 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         % Build Householder reflector
         xbareye = x_bar + eye(n-(i-1), 1);
         P_bar = eye(n-(i-1)) - 2 * (xbareye * xbareye') / sum(xbareye .^ 2);
+        P_bars{i} = P_bar;
         P = blkdiag(eye(i-1), P_bar);
         
         % Extract one eigenvalue
         B = P * B * P;
+        b = B(i, i:end)';
+        b_vecs{i} = b;
         lambda = B(i, i);
         D(i, i) = lambda; % Save the eigenvalue
         
         % Extract one eigenvector
         % *** Correct eigenvector ***
-        x_correction = zeros(i-1, 1);
-        for j = 1:i-1
-            lambda_prev = D(j, j);
-            if lambda ~= lambda_prev
-                b = ...; % TODO
-                x_correction(j) = - (b_prev' * x_bar) / (lambda_prev - lambda);
-            else
-                x_correction(j) = 0; % Avoid division by zero
-            end
-        end
-        
-        % Construct the corrected eigenvector
-        x_corrected = [x_correction; x_bar];
-        x = P_total * x_corrected; % Transform back to original space
-        V(:, i) = x; % Save the eigenvector
+%         x_correction = zeros(i-1, 1);
+%         for j = i-1:-1:1
+%             lambda_prev = D(j, j);
+%             if lambda ~= lambda_prev
+%                 b_corr = b_vecs{j}' * P_bars{j};
+%                 x_correction(j) = - (b_corr * [x_correction(j:end); x_bar]) / (lambda_prev - lambda);
+%             else
+%                 x_correction(j) = 0; % Avoid division by zero
+%             end
+%         end
+%         
+%         % Construct the corrected eigenvector
+%         x_corrected = [x_correction; x_bar];
+%         x = P_total * x_corrected; % Transform back to original space
+%         V(:, i) = x; % Save the eigenvector
         
         % *** Update for next iteration *** %
         
