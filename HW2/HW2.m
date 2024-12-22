@@ -118,8 +118,7 @@ function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
     % Check if it's a square matrix, otherwise there won't be any eigenvalues
     [n, m] = size(A);
     if n ~= m
-        disp ('Not square matrix')
-        return;
+        error('Not square matrix')
     end
     s_eigvec = v_0 / norm(v_0);
     s_eigval = inf;
