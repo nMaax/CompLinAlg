@@ -6,14 +6,18 @@ max_iter = 1000; % Maximum number of iterations
 rel_tol = 1e-8; % Tolerance for convergence
 
 % Generate a symmetric matrix
-A = [6, 2, 1; 2, 3, 1; 1, 1, 1]; % Example symmetric matrix
+A = [
+    6, 2, 1;
+    2, 6, 1;
+    1, 1, 1;
+]; % Example symmetric matrix
 M = size(A, 1); % Number of eigenvalues to compute
 
 % Compute eigenvalues and eigenvectors using DeflationMethod
 [V, D] = DeflationMethod(A, M, max_iter, rel_tol);
 
 % Compute eigenvalues and eigenvectors using MATLAB's built-in function
-[V_builtin, D_builtin] = eig(A);
+[V_builtin, D_builtin] = eigs(A);
 
 % Sort the results for comparison
 [D_deflation, idx_deflation] = sort(diag(D), 'descend');
@@ -26,7 +30,7 @@ V_builtin = V_builtin(:, idx_builtin);
 disp('Eigenvalues from DeflationMethod:');
 disp(D_deflation);
 
-disp('Eigenvalues from MATLAB eig():');
+disp('Eigenvalues from MATLAB eigs():');
 disp(D_builtin);
 
 disp('Eigenvectors from DeflationMethod:');

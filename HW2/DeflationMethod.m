@@ -7,7 +7,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
 
     % Initial guess for eigenvector
     v_0 = ones(n, 1); % Can use random values instead
-    p = 1; % Shift for inverse power method (adjust if needed)
+    p = 0; % Shift for inverse power method (adjust if needed)
     
     
     % Initial values for iterating
@@ -16,8 +16,9 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     P_total = eye(n); % Start with no reflection
     
     % Iteration
-    P_bars = cell(1, M);
-    b_vecs = cell(1, M);
+    P_bars      = repmat({0}, 1, M);
+    B_record    = repmat({0}, 1, M);
+    b_vecs      = repmat({0}, 1, M);
     while i <= M
         
         % *** Reflector and eigenpair computing *** %
@@ -35,7 +36,9 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         P = blkdiag(eye(i-1), P_bar);
         
         % Extract one eigenvalue
+        B_prev = B;
         B = P * B * P;
+        B_record{i} = B;
         b = B(i, i:end)';
         b_vecs{i} = b;
         lambda = B(i, i);
@@ -43,21 +46,27 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         
         % Extract one eigenvector
         % *** Correct eigenvector ***
-%         x_correction = zeros(i-1, 1);
-%         for j = i-1:-1:1
-%             lambda_prev = D(j, j);
-%             if lambda ~= lambda_prev
-%                 b_corr = b_vecs{j}' * P_bars{j};
-%                 x_correction(j) = - (b_corr * [x_correction(j:end); x_bar]) / (lambda_prev - lambda);
-%             else
-%                 x_correction(j) = 0; % Avoid division by zero
-%             end
-%         end
-%         
-%         % Construct the corrected eigenvector
-%         x_corrected = [x_correction; x_bar];
-%         x = P_total * x_corrected; % Transform back to original space
-%         V(:, i) = x; % Save the eigenvector
+        %B_prev = B_record{i-1};
+        x_correction = zeros(i-1, 1);
+        for j = i-1:-1:1
+            lambda_prev = D(j, j);
+            if lambda ~= lambda_prev
+%                 if isnan(P_bars{j+1})
+%                     b_corr = b_vecs{j}';
+%                 else
+%                     b_corr = b_vecs{j}' * P_bars{j};
+%                 end
+                b_corr = B_prev(j, j+1:end);
+                x_correction(j) = - (b_corr * [x_correction(j+1:end); x_bar]) / (lambda_prev - lambda);
+            else
+                x_correction(j) = 0; % Avoid division by zero
+            end
+        end
+        
+        % Construct the corrected eigenvector
+        x_corrected = [x_correction; x_bar];
+        x = P_total * x_corrected; % Transform back to original space
+        V(:, i) = x; % Save the eigenvector
         
         % *** Update for next iteration *** %
         
