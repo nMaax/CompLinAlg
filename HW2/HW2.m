@@ -115,26 +115,3 @@ grid on; % Add grid for better readability
 
 %% Final
 fprintf('*** End ***\n');
-
-%% Inverse power method
-% TODO: comment and move to another file
-function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
-    % Check if it's a square matrix, otherwise there won't be any eigenvalues
-    [n, m] = size(A);
-    if n ~= m
-        error('Not square matrix')
-    end
-    s_eigvec = v_0 / norm(v_0);     
-    s_eigval = inf;
-    for i = 1 : max_iter
-        % Solve linear system to find the smallest eigenvector of step i
-        s_eigvec_nonorm = (A - p * eye(n))\ s_eigvec;
-        s_eigvec = s_eigvec_nonorm/ norm(s_eigvec_nonorm);
-        previous_eigval = s_eigval;
-        s_eigval = s_eigvec' * A * s_eigvec;
-        if abs((s_eigval - previous_eigval) / s_eigval) < rel_tol
-            return;
-        end
-        p = s_eigval;
-    end
-end
