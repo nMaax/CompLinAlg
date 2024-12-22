@@ -32,7 +32,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         P = blkdiag(eye(i-1), P_bar);
         
         % Extract one eigenvalue
-        B_prev = B;
+        B_prev = B; % Need later for extracting eigenvalues
         B = P * B * P;
         lambda = B(i, i);
         D(i, i) = lambda; % Save the eigenvalue
