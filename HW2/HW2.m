@@ -1,17 +1,31 @@
 %% TODO
-% - [ ] Sparsity storage of matrices
+% - [ ] Tune inverse power method and solve issues related to badly scaled matrices
 % - [ ] Other data-sets
 % - [ ] Normalized symmetric Laplacian matrix
-% - [ ] Implementation of inverse power and deflating methods
-% - [ ] Different clustering techniques in the eigenspace
-% - [ ] Insert a plot for the elbowgraph of 20 eigenvalues magnitudes
+% - [X] Implementation of inverse power and deflating methods
+% - [X] Different clustering techniques in the eigenspace, with tuning
+% - [X] Insert a plot for the elbowgraph of 20 eigenvalues magnitudes
 % - [ ] LaTeX report
+% - [ ] Sparsity storage of matrices
 
 %% Initialization and Data Loading
 clear; clc; close all;
 
-% Load data from 'Circle.mat' where X contains the data points
-load('Circle.mat', 'X'); 
+% Choose dataset to load
+dataset = 'circle'; % Change this variable to switch between datasets
+
+switch dataset
+    case 'circle'
+        % Load data from 'Circle.mat' where X contains the data points
+        load('Circle.mat', 'X');
+        
+    case 'spiral'
+        % Load data from 'Spiral.mat' where X contains the data points
+        load('Spiral.mat', 'X');
+        
+    otherwise
+        error('Unknown dataset.');
+end
 
 % Plot the data
 % figure;
@@ -89,22 +103,114 @@ D = diag(sum(W));
 L = D - W;
 
 % Plot the sparsity pattern of L
-% figure;
-% spy(L);
+figure;
+spy(L);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
 M = 3;
+eigen_method = 'deflation'; % Change this variable to switch between methods
 
-%[eigenvectors, small_eigenvalues]= eigs(L, 20, 'smallestabs');
-[eigenvectors, small_eigenvalues]= DeflationMethod(L, 20);
-diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M);
-U = eigenvectors(:,1:M);
+tic; % Start the timer
+switch eigen_method
+    case 'deflation'
+        [eigenvectors, small_eigenvalues] = DeflationMethod(L, M*10); % Extract more eigenvalues for elbow plotting
+        
+    case 'builtin'
+        [eigenvectors, small_eigenvalues] = eigs(L, M*10, 'smallestabs'); % Extract more eigenvalues for elbow plotting
+        
+    otherwise
+        error('Unknown method for eigenpairs extraction.');
+end
+eigencalc_elapsed_time = toc; % Stop the timer
+fprintf('Eigenvalue calculation elapsed time: %.4f seconds\n', eigencalc_elapsed_time); % Print the elapsed time
 
-%% Perform k-means clustering
-[idx, C] = kmeans(U, M); % 'Replicates' helps to find a better solution
+diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M); % Select the M smallest eigenvalues
+U = eigenvectors(:,1:M); % Eigenspace spanned by the smallest eigenvalues on which we will perform clustering
 
-%% Plot
+%% Perform clustering on the eigenspace
+clustering_method = 'dbscan'; % Change this variable to switch between clustering methods
+
+switch clustering_method
+    case 'kmeans'
+        % Perform clustering using K-means
+        [idx, C] = kmeans(U, M); % No tuning needed for K-means
+        
+    case 'hierarchical'
+        % Perform clustering using Agglomerative Hierarchical Clustering with parameter tuning
+        linkage_methods = {'ward', 'single', 'complete', 'average'}; % Linkage methods to test
+        best_score = -Inf;   % Initialize the best score
+        best_idx = [];       % Initialize the best cluster labels
+        best_method = '';    % Initialize the best linkage method
+    
+        % Tuning the hyperparameters of the hierarchical clustering
+        for i = 1:length(linkage_methods)
+            method = linkage_methods{i};
+            % Compute the linkage matrix
+            Z = linkage(U, method);
+    
+            % Perform clustering
+            temp_idx = cluster(Z, 'maxclust', M);
+    
+            % Evaluate clustering quality (silhouette score)
+            if length(unique(temp_idx)) > 1 % Avoid single-cluster results
+                score = mean(silhouette(U, temp_idx));
+                if score > best_score
+                    best_score = score;
+                    best_idx = temp_idx;
+                    best_method = method;
+                end
+            end
+        end
+    
+        idx = best_idx; % Use the best clustering result
+    
+        % Print the best parameters
+        fprintf('Best Hierarchical Clustering parameters:\n');
+        fprintf('  Linkage Method: %s\n', best_method);
+        fprintf('  Silhouette Score: %.4f\n', best_score);
+        
+        case 'dbscan'
+            % Perform clustering using DBSCAN with parameter tuning
+            eps_range = 0.005:0.005:0.5; % Range of epsilon values to test
+            minPts_range = 5:5:15;   % Range of minPts values to test
+            best_score = -Inf;       % Initialize the best score
+            best_idx = [];           % Initialize the best cluster labels
+            best_eps = NaN;          % Initialize the best epsilon
+            best_minPts = NaN;       % Initialize the best minPts
+            
+            % Tuning the hyperparameters epsilon and minPts
+            for epsilon = eps_range
+                for minPts = minPts_range
+                    % Perform DBSCAN clustering
+                    temp_idx = dbscan(U, epsilon, minPts);
+    
+                    % Evaluate clustering quality (silhouette score)
+                    if length(unique(temp_idx)) > 1 % Avoid single-cluster results
+                        score = mean(silhouette(U, temp_idx));
+                        if score > best_score
+                            best_score = score;
+                            best_idx = temp_idx;
+                            best_eps = epsilon;
+                            best_minPts = minPts;
+                        end
+                    end
+                end
+            end
+    
+            idx = best_idx; % Use the best clustering result
+
+            % Print the best parameters
+            fprintf('Best DBSCAN parameters:\n');
+            fprintf('  Epsilon: %.2f\n', best_eps);
+            fprintf('  MinPts: %d\n', best_minPts);
+            fprintf('  Silhouette Score: %.4f\n', best_score);
+        
+    otherwise
+        error('Unknown clustering method.');
+end
+
+%% Plot of the clustering results
 
 % Plot the original data points colored by cluster assignment
 figure; % Create a new figure
