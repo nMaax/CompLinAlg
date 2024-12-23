@@ -20,7 +20,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         
         % *** Reflector and eigenpair computing *** %
         
-        % Update Ai for the following iteration
+        % Pick the submatrix Ai from B for the following iteration
         Ai = B(i:end, i:end);
         
         % Extracting eigenvector from the deflated matrix

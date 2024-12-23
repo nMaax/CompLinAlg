@@ -16,6 +16,13 @@ function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
     if n ~= m
         error('Not square matrix')
     end
+    
+    if isscalar(A)
+        s_eigval = A;
+        s_eigvec = v_0;
+        return
+    end
+    
     % Normalize the initial eigenvector guess
     s_eigvec = v_0 / norm(v_0);
     
