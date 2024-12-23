@@ -37,7 +37,7 @@ disp(lambda_x);
 
 % Check if the results are close (using a tolerance)
 if norm(Ax - lambda_x) < rel_tol
-    disp('Verification successful: A * x = lambda * x');
+    disp('Verification successful: A * x ~ lambda * x');
 else
     disp('Verification failed: A * x is not close to lambda * x');
 end
