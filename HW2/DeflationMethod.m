@@ -9,7 +9,14 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     % Output: 
     %   V - eigenvector matrix, 
     %   D - eigenvalue matrix
-    
+
+    % Set default values for optional parameters
+    if nargin < 3
+        max_iter = 1000; % Default maximum number of iterations
+    end
+    if nargin < 4
+        rel_tol = 1e-6; % Default relative tolerance
+    end
 
     % Preallocate matrices and data
     [n, m] = size(A); % Size of the matrix

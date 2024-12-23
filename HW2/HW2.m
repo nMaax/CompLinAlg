@@ -11,10 +11,10 @@
 clear; clc; close all;
 
 % Load data from 'Circle.mat' where X contains the data points
-load('Spiral.mat', 'X'); 
+load('Circle.mat', 'X'); 
 
 % Plot the data
-% figure;
+% figure;   
 % scatter(X(:, 1), X(:, 2));
 
 %% Matrix Size and Sigma Definition
@@ -96,7 +96,8 @@ L = D - W;
 
 M = 3;
 
-[eigenvectors, small_eigenvalues]= eigs(L, 20, 'smallestabs');
+%[eigenvectors, small_eigenvalues]= eigs(L, 20, 'smallestabs');
+[eigenvectors, small_eigenvalues]= DeflationMethod(L, 20);
 diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M);
 U = eigenvectors(:,1:M);
 
