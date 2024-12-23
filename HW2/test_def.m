@@ -11,20 +11,16 @@ A = [ % Example symmetric matrix
     2, 6, 1;
     1, 1, 1;
 ];
-M = size(A, 1); % Number of eigenvalues to compute
+M = 3; % Number of eigenvalues to compute
 
 % Compute eigenvalues and eigenvectors using DeflationMethod
-[V, D] = DeflationMethod(A, M, max_iter, rel_tol);
+[V_deflation, D_deflation] = DeflationMethod(A, M, max_iter, rel_tol);
 
 % Compute eigenvalues and eigenvectors using MATLAB's built-in function
-[V_builtin, D_builtin] = eigs(A);
+[V_builtin, D_builtin] = eigs(A, M, 'sm');
 
-% Sort the results for comparison
-[D_deflation, idx_deflation] = sort(diag(D), 'descend');
-V_deflation = V(:, idx_deflation);
-
-[D_builtin, idx_builtin] = sort(diag(D_builtin), 'descend');
-V_builtin = V_builtin(:, idx_builtin);
+% [D_builtin, idx_builtin] = sort(diag(D_builtin), 'descend');
+% V_builtin = V_builtin(:, idx_builtin);
 
 % Display results
 disp('Eigenvalues from DeflationMethod:');
