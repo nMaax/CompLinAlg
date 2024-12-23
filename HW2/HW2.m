@@ -14,7 +14,7 @@ clear; clc; close all;
 load('Circle.mat', 'X'); 
 
 % Plot the data
-% figure;   
+% figure;
 % scatter(X(:, 1), X(:, 2));
 
 %% Matrix Size and Sigma Definition
@@ -124,6 +124,16 @@ if size(X, 2) >= 3
     title('Spectral Clustering - Ground Truth Labels'); % Title of the plot
     grid on; % Add grid for better readability
 end
+
+%% Plot the elbow graph of the 20 smallest eigenvalues
+figure;
+plot(diag(small_eigenvalues), 'o-');
+hold on;
+plot(1:M, diag(diagonal_selected_eigenvalues), 'ro');
+xlabel('Eigenvalue Index');
+ylabel('Eigenvalue Magnitude');
+title('Elbow Graph of 20 Smallest Eigenvalues');
+grid on;
 
 %% Final
 fprintf('*** End ***\n');
