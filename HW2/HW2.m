@@ -96,22 +96,44 @@ L = D - W;
 
 M = 3;
 
-[eigenvectors, small_eigenvalues]= eigs(L, 20, 'smallestabs');
+%[eigenvectors, small_eigenvalues]= eigs(L, 20, 'smallestabs');
+[eigenvectors, small_eigenvalues]= DeflationMethod(L, 20);
 diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M);
 U = eigenvectors(:,1:M);
 
-%% Perform clustering
-
-% Perform k-means clustering
+%% Perform k-means clustering
 [idx, C] = kmeans(U, M); % 'Replicates' helps to find a better solution
+
+%% Plot
 
 % Plot the original data points colored by cluster assignment
 figure; % Create a new figure
 gscatter(X(:, 1), X(:, 2), idx); % Scatter plot with colors based on cluster index
 xlabel('X-axis'); % Label for the x-axis
 ylabel('Y-axis'); % Label for the y-axis
-title('Spectral clustering'); % Title of the plot
+title('Spectral Clustering - Cluster Assignments'); % Title of the plot
 grid on; % Add grid for better readability
+
+% Check if a third column (ground truth labels) exists in X
+if size(X, 2) >= 3
+    % Plot the data points with ground truth labels
+    figure; % Create another figure
+    gscatter(X(:, 1), X(:, 2), X(:, 3)); % Scatter plot with colors based on ground truth labels
+    xlabel('X-axis'); % Label for the x-axis
+    ylabel('Y-axis'); % Label for the y-axis
+    title('Spectral Clustering - Ground Truth Labels'); % Title of the plot
+    grid on; % Add grid for better readability
+end
+
+%% Plot the elbow graph of the 20 smallest eigenvalues
+figure;
+plot(diag(small_eigenvalues), 'o-');
+hold on;
+plot(1:M, diag(diagonal_selected_eigenvalues), 'ro');
+xlabel('Eigenvalue Index');
+ylabel('Eigenvalue Magnitude');
+title('Elbow Graph of 20 Smallest Eigenvalues');
+grid on;
 
 %% Final
 fprintf('*** End ***\n');
