@@ -22,7 +22,12 @@ switch dataset
     case 'spiral'
         % Load data from 'Spiral.mat' where X contains the data points
         load('Spiral.mat', 'X');
-        
+    case 'torus'
+        % Load data from 'torus_coordinates.csv' where the columns are x, y, z
+        X = readmatrix('torus_coordinates.csv');
+        % If the file has a header or if it requires special handling, adjust the line above accordingly
+        % For example: X = csvread('torus_coordinates.csv', 1, 0); if there's a header row
+          
     otherwise
         error('Unknown dataset.');
 end
@@ -99,8 +104,11 @@ D = diag(sum(W));
 % figure;
 % spy(W);
 
-%% Construct Laplacian Matrix L = D - W
-L = D - W;
+%% Construct normalized Laplacian Matrix 
+D_inv_sqrt = diag(1 ./ sqrt(diag(D)));
+
+% Compute L_norm = I - D^(-1/2) * W * D^(-1/2)
+L = eye(n) - D_inv_sqrt * W * D_inv_sqrt;
 
 % Plot the sparsity pattern of L
 figure;
@@ -212,23 +220,20 @@ end
 
 %% Plot of the clustering results
 
-% Plot the original data points colored by cluster assignment
+% Plot of the clustering results
 figure; % Create a new figure
-gscatter(X(:, 1), X(:, 2), idx); % Scatter plot with colors based on cluster index
-xlabel('X-axis'); % Label for the x-axis
-ylabel('Y-axis'); % Label for the y-axis
-title('Spectral Clustering - Cluster Assignments'); % Title of the plot
-grid on; % Add grid for better readability
-
-% Check if a third column (ground truth labels) exists in X
-if size(X, 2) >= 3
-    % Plot the data points with ground truth labels
-    figure; % Create another figure
-    gscatter(X(:, 1), X(:, 2), X(:, 3)); % Scatter plot with colors based on ground truth labels
-    xlabel('X-axis'); % Label for the x-axis
-    ylabel('Y-axis'); % Label for the y-axis
-    title('Spectral Clustering - Ground Truth Labels'); % Title of the plot
-    grid on; % Add grid for better readability
+if size(X, 2) == 3
+    scatter3(X(:, 1), X(:, 2), X(:, 3),10, idx, 'filled'); % 3D scatter plot
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    zlabel('Z-axis');
+    axis equal;
+    title('Spectral Clustering - Cluster Assignments (3D)');
+else
+    gscatter(X(:, 1), X(:, 2), idx); % 2D scatter plot
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    title('Spectral Clustering - Cluster Assignments (2D)');
 end
 
 %% Plot the elbow graph of the 20 smallest eigenvalues
