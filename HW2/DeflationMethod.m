@@ -75,6 +75,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     % Sort the results for returning the smallest
     [~, idx] = sort(diag(D), 'ascend');
     D = D(idx, idx);
+    D = D(1:M, 1:M);
     V = V(:, idx);
 
     % % Return the M smallest eigenvalues and eigenvectors

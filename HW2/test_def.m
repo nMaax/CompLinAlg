@@ -11,7 +11,7 @@ A = [ % Example symmetric matrix
     2, 6, 1;
     1, 1, 1;
 ];
-M = 3; % Number of eigenvalues to compute
+M = 2; % Number of eigenvalues to compute
 
 % Compute eigenvalues and eigenvectors using DeflationMethod
 [V_deflation, D_deflation] = DeflationMethod(A, M, max_iter, rel_tol);
