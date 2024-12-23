@@ -6,11 +6,11 @@ max_iter = 1000; % Maximum number of iterations
 rel_tol = 1e-8; % Tolerance for convergence
 
 % Generate a symmetric matrix
-A = [
+A = [ % Example symmetric matrix
     6, 2, 1;
     2, 6, 1;
     1, 1, 1;
-]; % Example symmetric matrix
+];
 M = size(A, 1); % Number of eigenvalues to compute
 
 % Compute eigenvalues and eigenvectors using DeflationMethod
