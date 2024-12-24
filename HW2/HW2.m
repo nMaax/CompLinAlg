@@ -1,6 +1,6 @@
 %% TODO
 % - [ ] Tune inverse power method and solve issues related to badly scaled matrices
-% - [ ] Other data-sets
+% - [X] Other data-sets
 % - [ ] Normalized symmetric Laplacian matrix
 % - [X] Implementation of inverse power and deflating methods
 % - [X] Different clustering techniques in the eigenspace, with tuning
@@ -12,7 +12,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'circle'; % Change this variable to switch between datasets
+dataset = 'torus'; % Change this variable to switch between datasets
 
 switch dataset
     case 'circle'
@@ -22,11 +22,10 @@ switch dataset
     case 'spiral'
         % Load data from 'Spiral.mat' where X contains the data points
         load('Spiral.mat', 'X');
+    
     case 'torus'
         % Load data from 'torus_coordinates.csv' where the columns are x, y, z
         X = readmatrix('torus_coordinates.csv');
-        % If the file has a header or if it requires special handling, adjust the line above accordingly
-        % For example: X = csvread('torus_coordinates.csv', 1, 0); if there's a header row
           
     otherwise
         error('Unknown dataset.');
@@ -116,7 +115,7 @@ spy(L);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
-M = 3;
+M = 2;
 eigen_method = 'deflation'; % Change this variable to switch between methods
 
 tic; % Start the timer
@@ -223,16 +222,17 @@ end
 % Plot of the clustering results
 figure; % Create a new figure
 if size(X, 2) == 3
-    scatter3(X(:, 1), X(:, 2), X(:, 3),10, idx, 'filled'); % 3D scatter plot
+    scatter3(X(:, 1), X(:, 2), X(:, 3), 10, idx, 'filled'); % 3D scatter plot
     xlabel('X-axis');
     ylabel('Y-axis');
     zlabel('Z-axis');
     axis equal;
     title('Spectral Clustering - Cluster Assignments (3D)');
-else
+elseif size(X, 2) == 2
     gscatter(X(:, 1), X(:, 2), idx); % 2D scatter plot
     xlabel('X-axis');
     ylabel('Y-axis');
+    axis equal;
     title('Spectral Clustering - Cluster Assignments (2D)');
 end
 
@@ -244,6 +244,7 @@ plot(1:M, diag(diagonal_selected_eigenvalues), 'ro');
 xlabel('Eigenvalue Index');
 ylabel('Eigenvalue Magnitude');
 title('Elbow Graph of 20 Smallest Eigenvalues');
+legend('All Eigenvalues', 'Selected Eigenvalues');
 grid on;
 
 %% Final
