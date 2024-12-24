@@ -1,12 +1,7 @@
 %% TODO
 % - [ ] Tune inverse power method and solve issues related to badly scaled matrices
-% - [X] Other data-sets
-% - [ ] Normalized symmetric Laplacian matrix
-% - [X] Implementation of inverse power and deflating methods
-% - [X] Different clustering techniques in the eigenspace, with tuning
-% - [X] Insert a plot for the elbowgraph of 20 eigenvalues magnitudes
-% - [ ] LaTeX report
 % - [ ] Sparsity storage of matrices
+% - [ ] LaTeX report
 
 %% Initialization and Data Loading
 clear; clc; close all;
@@ -105,6 +100,9 @@ D = diag(sum(W));
 
 %% Construct normalized Laplacian Matrix 
 D_inv_sqrt = diag(1 ./ sqrt(diag(D)));
+
+% Compute the unnormalized Laplacian
+% L = D - W;
 
 % Compute L_norm = I - D^(-1/2) * W * D^(-1/2)
 L = eye(n) - D_inv_sqrt * W * D_inv_sqrt;
