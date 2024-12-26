@@ -1,13 +1,12 @@
 %% TODO
 % - [ ] Tune inverse power method and solve issues related to badly scaled matrices
-% - [ ] Sparsity storage of matrices
 % - [ ] LaTeX report
 
 %% Initialization and Data Loading
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'circle'; % Change this variable to switch between datasets
+dataset = 'torus'; % Change this variable to switch between datasets
 
 switch dataset
     case 'circle'
@@ -27,17 +26,7 @@ switch dataset
         error('Unknown dataset.');
 end
 
-% Plot the data
-% figure;
-% scatter(X(:, 1), X(:, 2));
-
-%% Matrix Size and Sigma Definition
-% Get the size of the data matrix X
-[n, m] = size(X);
-
-% Allocate space for the similarity matrix S (n x n)
-S = zeros(n, n);
-sigma = 1; % Define the scale parameter for the Gaussian similarity
+[n, m] = size(X); % Get the dimensionality of data for later use
 
 %% Construct Similarity Matrix S
 % Compute the similarity matrix S using the Gaussian function. 
@@ -48,48 +37,32 @@ sigma = 1; % Define the scale parameter for the Gaussian similarity
 X_square = sum(X.^2, 2);
 distance_matrix = X_square + X_square' - 2 * (X * X');
 
+sigma = 1; % Define the scale parameter for the Gaussian similarity
 % Compute the similarity matrix S using the Gaussian function
 S = exp(-distance_matrix / (2 * sigma^2));
 
-% Plot the sparsity pattern of S
-% figure;
-% spy(S);
-
-%% Construct K-Nearest Neighbors (KNN) Matrix
+%% Construct K-Nearest Neighbors (kNN) Matrix
 k = 10; % Set the number of neighbors to [10, 20, 40]
 assert(k < n, 'The number of neighbors must be less than the number of data points.');
 
-% Allocate space for the KNN matrix (n x k)
-KNN = zeros(n, k);
-
-for i = 1:n
-    % Get the row of the similarity matrix for the i-th point
-    neigh_of_i = S(i, :);
-    
-    % Get the indices of the k largest values (max similarity)
-    [~, knn] = maxk(neigh_of_i, k);
-    
-    % Store the K nearest neighbors for the i-th point
-    KNN(i, :) = knn;
-end
+[~, kNN] = maxk(S, k, 2); % Find the k nearest neighbors for each point
 
 %% Construct Weighted Adjacency Matrix W and Degree Matrix D
-% Initialize index and value arrays for sparse matrices
+% Allocate index and value arrays for sparse matrices
 i_indices = zeros(1, n * k * 2);
 j_indices = zeros(1, n * k * 2);
 values_W = zeros(1, n * k * 2);
 
-% Uncomment to construct the B matrix
-%values_B = zeros(1, n * k * 2);
-
+% Fill the index and value arrays for the sparse matrix construction
 for i = 1:n
+
     % Get the k nearest neighbors of the i-th point
-    neigh_of_i = KNN(i, :);
+    neigh_of_i = kNN(i, :);
     
-    % Compute the start and end indices for the i-th row: will move on the arrays in blocks of 2*k
+    % Compute the start and end indices for the i-th row: we will move on the arrays in blocks of 2*k
     % e.g.  __indices[0:k, k+1:2k, 2k+1:3k, ..., (n-1)*k+1:n*k]
-    start_idx = (i - 1) * k * 2 + 1;
-    end_idx = i * k * 2;
+    start_idx   = (i - 1)   * k * 2 + 1;
+    end_idx     = i         * k * 2;
     
     % Fill the index and value arrays for the sparse matrix construction
     % e.g   i_indices[2k+1:3k] =   [3, 3, 3, ..., 3,    neigh_of_3 ... ];
@@ -97,27 +70,12 @@ for i = 1:n
     i_indices(start_idx:end_idx) = [repmat(i, 1, k),    neigh_of_i]; % Row indices for W
     j_indices(start_idx:end_idx) = [neigh_of_i,         repmat(i, 1, k)]; % Column indices for W
     
-    % Values for W, generalized for non-symmetric matrices. In symmetric case writing S(neigh_of_i, i) == S(i, neigh_of_i)'
+    % Values for W, generalized for non-symmetric matrices. In symmetric case writing S(neigh_of_i, i) or S(i, neigh_of_i)' is equivalent
     values_W(start_idx:end_idx) =  [S(i, neigh_of_i),    S(neigh_of_i, i)'];
-
-    % Uncomment to construct the B matrix
-    %values_B(start_idx:end_idx) = [ones(1, k),          ones(1, k)];
 end
 
-W = sparse(i_indices, j_indices, values_W, n, n);
-
-% Uncomment to construct the B matrix
-%B = sparse(i_indices, j_indices, values_B, n, n);
-
-D = spdiags(sum(W, 2), 0, n, n);
-
-% Plot the sparsity pattern of D (diagonal matrix)
-% figure;
-% spy(D);
-
-% Plot the sparsity pattern of W
-% figure;
-% spy(W);
+W = sparse(i_indices, j_indices, values_W, n, n); % Construct the weighted adjacency matrix W
+D = spdiags(sum(W, 2), 0, n, n); % Compute the degree matrix D
 
 %% Construct normalized Laplacian Matrix 
 D_inv_sqrt = diag(1 ./ sqrt(diag(D)));
@@ -135,7 +93,7 @@ spy(L);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
-M = 3; % Number of clusters to find (ignored in dbscan)
+M = 2; % Number of clusters to find (ignored in dbscan)
 assert(M < n, 'The number of clusters must be less than the number of data points.');
 
 eigen_method = 'deflation'; % Change this variable to switch between methods
