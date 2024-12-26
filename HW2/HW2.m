@@ -40,12 +40,16 @@ S = zeros(n, n);
 sigma = 1; % Define the scale parameter for the Gaussian similarity
 
 %% Construct Similarity Matrix S
-% Compute the similarity matrix S using a Gaussian function
-for i = 1:n
+% Compute the similarity matrix S using the Gaussian function. 
+% Could also be implemented with more naive approaches, but this is the most efficient
 
-    % Compute the Gaussian similarity between Xi and all Xj, vectorized for speed (can also be implemented as a double innested for-loop)
-    S(i, :) = exp(-sum((X - X(i, :)).^2, 2) / (2 * sigma^2));
-end
+% Compute the pairwise squared Euclidean distance matrix, where the (i, j)-th entry is the squared Euclidean distance between the i-th and j-th points. Directly comes from the definition of the Eucledian distance: 
+% ||x_i - x_j||^2 = sum(x_i^2 + x_j^2 - 2 * x_i * x_j)
+X_square = sum(X.^2, 2);
+distance_matrix = X_square + X_square' - 2 * (X * X');
+
+% Compute the similarity matrix S using the Gaussian function
+S = exp(-distance_matrix / (2 * sigma^2));
 
 % Plot the sparsity pattern of S
 % figure;
