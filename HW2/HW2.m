@@ -7,7 +7,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'torus'; % Change this variable to switch between datasets
+dataset = 'spiral'; % Change this variable to switch between datasets
 
 switch dataset
     case 'circle'
@@ -17,6 +17,7 @@ switch dataset
     case 'spiral'
         % Load data from 'Spiral.mat' where X contains the data points
         load('Spiral.mat', 'X');
+        X = X(:, 1:2); % Keep only the first two columns (ignore the ground truth)
     
     case 'torus'
         % Load data from 'torus_coordinates.csv' where the columns are x, y, z
@@ -88,7 +89,11 @@ for i = 1:n
     B(neigh_of_i, i) = ones(length(neigh_of_i), 1);
     W(neigh_of_i, i) = S(neigh_of_i, i);
 end
+W = sparse(W);
+B = sparse(B);
+
 D = diag(sum(W));
+D = sparse(D);
 
 % Plot the sparsity pattern of D (diagonal matrix)
 % figure;
@@ -106,6 +111,7 @@ D_inv_sqrt = diag(1 ./ sqrt(diag(D)));
 
 % Compute L_norm = I - D^(-1/2) * W * D^(-1/2)
 L = eye(n) - D_inv_sqrt * W * D_inv_sqrt;
+L = sparse(L);
 
 % Plot the sparsity pattern of L
 figure;
@@ -113,7 +119,7 @@ spy(L);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
-M = 2;
+M = 3;
 eigen_method = 'deflation'; % Change this variable to switch between methods
 
 tic; % Start the timer
@@ -134,7 +140,7 @@ diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M); % Select the M small
 U = eigenvectors(:,1:M); % Eigenspace spanned by the smallest eigenvalues on which we will perform clustering
 
 %% Perform clustering on the eigenspace
-clustering_method = 'dbscan'; % Change this variable to switch between clustering methods
+clustering_method = 'kmeans'; % Change this variable to switch between clustering methods
 
 switch clustering_method
     case 'kmeans'
@@ -176,7 +182,7 @@ switch clustering_method
         fprintf('  Silhouette Score: %.4f\n', best_score);
         
         case 'dbscan'
-            % Perform clustering using DBSCAN with parameter tuning
+            % Perform clustering using DBSCAN with parameter tuning, M is ignored here
             eps_range = 0.005:0.005:0.5; % Range of epsilon values to test
             minPts_range = 5:5:15;   % Range of minPts values to test
             best_score = -Inf;       % Initialize the best score
