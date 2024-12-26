@@ -37,8 +37,9 @@ assert(M < n, 'The number of clusters must be less than the number of data point
 % Compute the similarity matrix S using the Gaussian function. 
 % Could also be implemented with more naive approaches, but this is the most efficient
 
-% Compute the pairwise squared Euclidean distance matrix, where the (i, j)-th entry is the squared Euclidean distance between the i-th and j-th points. Directly comes from the definition of the Eucledian distance: 
-% ||x_i - x_j||^2 = sum(x_i^2 + x_j^2 - 2 * x_i * x_j)
+% Compute the pairwise squared Euclidean distance matrix, where the (i, j)-th entry is the squared Euclidean distance between the i-th and j-th points. 
+% Directly comes from the definition of the Eucledian distance: 
+% d(x, y) = sum(xi - yi)^2 = sum(x_i^2 + y_i^2 - 2 * x_i * y_i)
 X_square = sum(X.^2, 2);
 distance_matrix = X_square + X_square' - 2 * (X * X');
 
