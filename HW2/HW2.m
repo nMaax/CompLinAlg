@@ -41,15 +41,10 @@ sigma = 1; % Define the scale parameter for the Gaussian similarity
 
 %% Construct Similarity Matrix S
 % Compute the similarity matrix S using a Gaussian function
-%? TODO: Improve by algebra operations instead of loops 
 for i = 1:n
-    for j = 1:n
-        Xi = X(i, :); % Get the i-th data point
-        Xj = X(j, :); % Get the j-th data point
-        
-        % Compute the Gaussian similarity between Xi and Xj
-        S(i, j) = exp(-norm(Xi - Xj)^2 / (2 * sigma^2));
-    end
+
+    % Compute the Gaussian similarity between Xi and all Xj, vectorized for speed (can also be implemented as a double innested for-loop)
+    S(i, :) = exp(-sum((X - X(i, :)).^2, 2) / (2 * sigma^2));
 end
 
 % Plot the sparsity pattern of S
@@ -72,8 +67,6 @@ for i = 1:n
     
     % Store the K nearest neighbors for the i-th point
     KNN(i, :) = knn;
-    % Uncomment the following line for debugging output
-    % fprintf('%d knn are [%d, %d, %d]\n', i, knn);
 end
 
 %% Construct Weighted Adjacency Matrix W and Degree Matrix D
@@ -86,7 +79,7 @@ values_W = zeros(1, n * k * 2);
 %values_B = zeros(1, n * k * 2);
 
 for i = 1:n
-    % Get the K nearest neighbors of the i-th point
+    % Get the k nearest neighbors of the i-th point
     neigh_of_i = KNN(i, :);
     
     % Compute the start and end indices for the i-th row: will move on the arrays in blocks of 2*k
@@ -95,16 +88,16 @@ for i = 1:n
     end_idx = i * k * 2;
     
     % Fill the index and value arrays for the sparse matrix construction
-    % e.g   i_indices[2k+1:3k] = [3, 3, 3, ..., 3, neigh_of_3...];
-    %       j_indices[2k+1:3k] = [neigh_of_3... , 3, 3, 3, ..., 3];
+    % e.g   i_indices[2k+1:3k] =   [3, 3, 3, ..., 3,    neigh_of_3 ... ];
+    %       j_indices[2k+1:3k] =   [neigh_of_3 ... ,    3, 3, 3, ..., 3];
     i_indices(start_idx:end_idx) = [repmat(i, 1, k),    neigh_of_i]; % Row indices for W
     j_indices(start_idx:end_idx) = [neigh_of_i,         repmat(i, 1, k)]; % Column indices for W
     
     % Values for W, generalized for non-symmetric matrices. In symmetric case writing S(neigh_of_i, i) == S(i, neigh_of_i)'
-    values_W(start_idx:end_idx) = [S(i, neigh_of_i), S(neigh_of_i, i)'];
+    values_W(start_idx:end_idx) =  [S(i, neigh_of_i),    S(neigh_of_i, i)'];
 
     % Uncomment to construct the B matrix
-    %values_B(start_idx:end_idx) = [ones(1, k), ones(1, k)]; % Uncomment if B matrix is needed
+    %values_B(start_idx:end_idx) = [ones(1, k),          ones(1, k)];
 end
 
 W = sparse(i_indices, j_indices, values_W, n, n);
