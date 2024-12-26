@@ -7,7 +7,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'spiral'; % Change this variable to switch between datasets
+dataset = 'circle'; % Change this variable to switch between datasets
 
 switch dataset
     case 'circle'
@@ -41,6 +41,7 @@ sigma = 1; % Define the scale parameter for the Gaussian similarity
 
 %% Construct Similarity Matrix S
 % Compute the similarity matrix S using a Gaussian function
+%? TODO: Improve by algebra operations instead of loops 
 for i = 1:n
     for j = 1:n
         Xi = X(i, :); % Get the i-th data point
@@ -55,10 +56,11 @@ end
 % figure;
 % spy(S);
 
-%% Construct K-Nearest Neighbors (KNN)
-% Allocate space for the KNN matrix (n x k)
-
+%% Construct K-Nearest Neighbors (KNN) Matrix
 k = 10; % Set the number of neighbors to [10, 20, 40]
+assert(k < n, 'The number of neighbors must be less than the number of data points.');
+
+% Allocate space for the KNN matrix (n x k)
 KNN = zeros(n, k);
 
 for i = 1:n
@@ -75,25 +77,42 @@ for i = 1:n
 end
 
 %% Construct Weighted Adjacency Matrix W and Degree Matrix D
-% Allocate space for the weighted adjacency matrix W (n x n)
-W = zeros(n, n);
-B = zeros(n, n);
+% Initialize index and value arrays for sparse matrices
+i_indices = zeros(1, n * k * 2);
+j_indices = zeros(1, n * k * 2);
+values_W = zeros(1, n * k * 2);
+
+% Uncomment to construct the B matrix
+%values_B = zeros(1, n * k * 2);
+
 for i = 1:n
     % Get the K nearest neighbors of the i-th point
     neigh_of_i = KNN(i, :);
     
-    % Assign the corresponding similarity values to the adjacency matrix W
-    B(i, neigh_of_i) = ones(1, length(neigh_of_i));
-    W(i, neigh_of_i) = S(i, neigh_of_i);
+    % Compute the start and end indices for the i-th row: will move on the arrays in blocks of 2*k
+    % e.g.  __indices[0:k, k+1:2k, 2k+1:3k, ..., (n-1)*k+1:n*k]
+    start_idx = (i - 1) * k * 2 + 1;
+    end_idx = i * k * 2;
     
-    B(neigh_of_i, i) = ones(length(neigh_of_i), 1);
-    W(neigh_of_i, i) = S(neigh_of_i, i);
-end
-W = sparse(W);
-B = sparse(B);
+    % Fill the index and value arrays for the sparse matrix construction
+    % e.g   i_indices[2k+1:3k] = [3, 3, 3, ..., 3, neigh_of_3...];
+    %       j_indices[2k+1:3k] = [neigh_of_3... , 3, 3, 3, ..., 3];
+    i_indices(start_idx:end_idx) = [repmat(i, 1, k),    neigh_of_i]; % Row indices for W
+    j_indices(start_idx:end_idx) = [neigh_of_i,         repmat(i, 1, k)]; % Column indices for W
+    
+    % Values for W, generalized for non-symmetric matrices. In symmetric case writing S(neigh_of_i, i) == S(i, neigh_of_i)'
+    values_W(start_idx:end_idx) = [S(i, neigh_of_i), S(neigh_of_i, i)'];
 
-D = diag(sum(W));
-D = sparse(D);
+    % Uncomment to construct the B matrix
+    %values_B(start_idx:end_idx) = [ones(1, k), ones(1, k)]; % Uncomment if B matrix is needed
+end
+
+W = sparse(i_indices, j_indices, values_W, n, n);
+
+% Uncomment to construct the B matrix
+%B = sparse(i_indices, j_indices, values_B, n, n);
+
+D = spdiags(sum(W, 2), 0, n, n);
 
 % Plot the sparsity pattern of D (diagonal matrix)
 % figure;
@@ -119,7 +138,9 @@ spy(L);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
-M = 3;
+M = 3; % Number of clusters to find (ignored in dbscan)
+assert(M < n, 'The number of clusters must be less than the number of data points.');
+
 eigen_method = 'deflation'; % Change this variable to switch between methods
 
 tic; % Start the timer
@@ -218,7 +239,7 @@ switch clustering_method
             fprintf('  Silhouette Score: %.4f\n', best_score);
         
     otherwise
-        error('Unknown clustering method.');
+        error('Unknown clustering method for data in the eigenspace.');
 end
 
 %% Plot of the clustering results
