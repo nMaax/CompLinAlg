@@ -17,6 +17,7 @@ switch dataset
     case 'spiral'
         % Load data from 'Spiral.mat' where X contains the data points
         load('Spiral.mat', 'X');
+        X = X(:, 1:end-1);
     
     case 'torus'
         % Load data from 'torus_coordinates.csv' where the columns are x, y, z
