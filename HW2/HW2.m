@@ -6,7 +6,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'spiral'; % Change this variable to switch between datasets
+dataset = 'torus'; % Change this variable to switch between datasets
 
 switch dataset
 
@@ -55,9 +55,9 @@ assert(k < n, 'The number of neighbors must be less than the number of data poin
 
 %% Construct Weighted Adjacency Matrix W and Degree Matrix D
 % Allocate index and value arrays for sparse matrices
-i_indices = zeros(1, n * k * 2);
-j_indices = zeros(1, n * k * 2);
-values_W = zeros(1, n * k * 2);
+i_indices = zeros(1, n * k);
+j_indices = zeros(1, n * k);
+values_W = zeros(1, n * k);
 
 % Fill the index and value arrays for the sparse matrix construction
 for i = 1:n
@@ -65,22 +65,21 @@ for i = 1:n
     % Get the k nearest neighbors of the i-th point
     neigh_of_i = kNN(i, :);
     
-    % Compute the start and end indices for the i-th row: we will move on the arrays in blocks of 2*k
-    % e.g.  __indices[0:k, k+1:2k, 2k+1:3k, ..., (n-1)*k+1:n*k]
-    start_idx   = (i - 1)   * k * 2 + 1;
-    end_idx     = i         * k * 2;
+    % Compute the start and end indices for the i-th row: we will move on the arrays in blocks of k elements
+    % e.g.  __indices[1:k, k+1:2k, 2k+1:3k, ...]
+    start_idx   = (i-1)*k + 1;
+    end_idx     = i*k ;
     
     % Fill the index and value arrays for the sparse matrix construction
-    % e.g   i_indices[2k+1:3k] =   [3, 3, 3, ..., 3,    neigh_of_3 ... ];
-    %       j_indices[2k+1:3k] =   [neigh_of_3 ... ,    3, 3, 3, ..., 3];
-    i_indices(start_idx:end_idx) = [repmat(i, 1, k),    neigh_of_i]; % Row indices for W
-    j_indices(start_idx:end_idx) = [neigh_of_i,         repmat(i, 1, k)]; % Column indices for W
+    i_indices(start_idx:end_idx) = repmat(i, 1, k); % Row indices for W
+    j_indices(start_idx:end_idx) = neigh_of_i; % Column indices for W
     
-    % Values for W, generalized for non-symmetric matrices. In symmetric case writing S(neigh_of_i, i) or S(i, neigh_of_i)' is equivalent
-    values_W(start_idx:end_idx) =  [S(i, neigh_of_i),    S(neigh_of_i, i)'];
+    % Values for W
+    values_W(start_idx:end_idx) =  S(i, neigh_of_i);
 end
 
 W = sparse(i_indices, j_indices, values_W, n, n); % Construct the weighted adjacency matrix W
+W = W + W'; % Make the matrix symmetric
 D = spdiags(sum(W, 2), 0, n, n); % Compute the degree matrix D
 
 %% Construct normalized Laplacian Matrix 
@@ -131,7 +130,7 @@ legend('All Eigenvalues', 'Selected Eigenvalues');
 grid on;
 
 %% Perform clustering on the eigenspace
-clustering_method = 'dbscan'; % Change this variable to switch between clustering methods
+clustering_method = 'kmeans'; % Change this variable to switch between clustering methods
 
 switch clustering_method
 
