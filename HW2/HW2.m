@@ -7,7 +7,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'torus'; % Change this variable to switch between datasets
+dataset = 'spiral'; % Change this variable to switch between datasets
 
 switch dataset
     case 'circle'
