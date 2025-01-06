@@ -218,7 +218,7 @@ end
 colors = lines(max(idx)); % Use the 'lines' colormap for better visibility on white background
 
 figure;
-scatter3(U(:, 1), U(:, 2), U(:, 3), 10, idx, 'filled');
+scatter(U(:, 1), U(:, 2), 10, idx, 'filled');
 colormap(colors); % Apply the colormap
 xlabel('First Eigenvector');
 ylabel('Second Eigenvector');
@@ -237,7 +237,8 @@ if size(X, 2) == 3
     axis equal;
     title('Spectral Clustering - Cluster Assignments (3D)');
 elseif size(X, 2) == 2
-    gscatter(X(:, 1), X(:, 2), idx, colors); % 2D scatter plot, with colormap applied
+    scatter(X(:, 1), X(:, 2), 10, idx, 'filled'); % 2D scatter plot, filled
+    colormap(colors); % Apply the colormap
     xlabel('X-axis');
     ylabel('Y-axis');
     axis equal;
