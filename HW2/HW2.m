@@ -6,7 +6,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'torus'; % Change this variable to switch between datasets
+dataset = 'spiral'; % Change this variable to switch between datasets
 
 switch dataset
 
@@ -212,12 +212,22 @@ switch clustering_method
         error('Unknown clustering method for data in the eigenspace.');
 end
 
-%% Plot of the clustering results
+%% Plot the scatter of data on the eigenspace
 
-% Plot of the clustering results
-figure; % Create a new figure
+% Define colors for the clusters
 colors = lines(max(idx)); % Use the 'lines' colormap for better visibility on white background
 
+figure;
+scatter3(U(:, 1), U(:, 2), U(:, 3), 10, idx, 'filled');
+colormap(colors); % Apply the colormap
+xlabel('First Eigenvector');
+ylabel('Second Eigenvector');
+title('Scatter Plot of Data in the Eigenspace');
+grid on;
+
+%% Plot of the clustering results
+
+figure;
 if size(X, 2) == 3
     scatter3(X(:, 1), X(:, 2), X(:, 3), 10, idx, 'filled'); % 3D scatter plot
     colormap(colors); % Apply the colormap
