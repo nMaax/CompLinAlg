@@ -1,7 +1,3 @@
-%% TODO
-% - [ ] Tune inverse power method and solve issues related to badly scaled matrices
-% - [ ] LaTeX report
-
 %% Initialization and Data Loading
 clear; clc; close all;
 
@@ -95,6 +91,7 @@ L = sparse(L);
 % Plot the sparsity pattern of L
 figure;
 spy(L);
+title(['Laplacian Matrix Sparsity Pattern of ', dataset]);
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
@@ -137,6 +134,8 @@ switch clustering_method
     case 'kmeans'
         % Perform clustering using K-means
         [idx, C] = kmeans(U, M); % No tuning needed for K-means
+        score = mean(silhouette(U, idx)); % Compute the silhouette score
+        fprintf('K-means Silhouette Score: %.4f\n', score);
         
     case 'hierarchical'
         % Perform clustering using Agglomerative Hierarchical Clustering with parameter tuning
