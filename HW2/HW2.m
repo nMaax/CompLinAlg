@@ -91,39 +91,60 @@ L = sparse(L);
 % Plot the sparsity pattern of L
 figure;
 spy(L);
-title(['Laplacian Matrix Sparsity Pattern of ', dataset]);
+title(sprintf('Laplacian Matrix Sparsity Pattern of %s', upper(dataset)));
+
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
 eigen_method = 'deflation'; % Change this variable to switch between methods
 
+warning('off', 'MATLAB:nearlySingularMatrix'); % Turn off warnings for nearly singular matrices
 tic; % Start the timer
 switch eigen_method
 
     case 'deflation'
-        [eigenvectors, small_eigenvalues] = DeflationMethod(L, M*10); % Extract more eigenvalues for elbow plotting
+        [eigenvectors, small_eigenvalues] = DeflationMethod(L, M*10); % Extract more eigenvalues for elbow plotting and silhouette comparison
         
     case 'builtin'
-        [eigenvectors, small_eigenvalues] = eigs(L, M*10, 'smallestabs'); % Extract more eigenvalues for elbow plotting
+        [eigenvectors, small_eigenvalues] = eigs(L, M*10, 'smallestabs'); % Extract more eigenvalues for elbow plotting and silhouette comparison
         
     otherwise
         error('Unknown method for eigenpairs extraction.');
 end
 eigencalc_elapsed_time = toc; % Stop the timer
+warning('on', 'MATLAB:nearlySingularMatrix'); % Turn warnings back on
+
 fprintf('Eigenvalue calculation elapsed time: %.4f seconds\n', eigencalc_elapsed_time); % Print the elapsed time
 
 diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M); % Select the M smallest eigenvalues
 U = eigenvectors(:,1:M); % Eigenspace spanned by the smallest eigenvalues on which we will perform clustering
 
-%% Plot the elbow graph of the 20 smallest eigenvalues
+%% Plot the elbow graph of the eigenvalues
 figure;
 plot(diag(small_eigenvalues), 'o-');
 hold on;
 plot(1:M, diag(diagonal_selected_eigenvalues), 'ro');
 xlabel('Eigenvalue Index');
 ylabel('Eigenvalue Magnitude');
-title('Elbow Graph of 20 Smallest Eigenvalues');
+title(sprintf('Elbow Graph of 20 Smallest Eigenvalues of Lapliacian of %s', upper(dataset)));
 legend('All Eigenvalues', 'Selected Eigenvalues');
+grid on;
+
+%% Evaluate silhouette scores for different values of M, using K-means clustering
+silhouette_scores = zeros(1, 10 * M);
+
+for m = 1:10*M
+    % Perform clustering using K-means for each m
+    [idx, ~] = kmeans(eigenvectors(:, 1:m), m);
+    silhouette_scores(m) = mean(silhouette(eigenvectors(:, 1:m), idx));
+end
+
+% Plot the silhouette scores
+figure;
+plot(1:10 * M, silhouette_scores, 'o-');
+xlabel('Number of Eigenvectors (m)');
+ylabel('Silhouette Score');
+title(sprintf('Silhouette Scores for Different Values of M (KNN = %d) on %s', k, upper(dataset)));
 grid on;
 
 %% Perform clustering on the eigenspace
@@ -134,8 +155,8 @@ switch clustering_method
     case 'kmeans'
         % Perform clustering using K-means
         [idx, C] = kmeans(U, M); % No tuning needed for K-means
-        score = mean(silhouette(U, idx)); % Compute the silhouette score
-        fprintf('K-means Silhouette Score: %.4f\n', score);
+        best_score = mean(silhouette(U, idx)); % Compute the silhouette score
+        fprintf('K-means Silhouette Score: %.4f\n', best_score);
         
     case 'hierarchical'
         % Perform clustering using Agglomerative Hierarchical Clustering with parameter tuning
@@ -217,12 +238,21 @@ end
 colors = lines(max(idx)); % Use the 'lines' colormap for better visibility on white background
 
 figure;
-scatter(U(:, 1), U(:, 2), 10, idx, 'filled');
-colormap(colors); % Apply the colormap
-xlabel('First Eigenvector');
-ylabel('Second Eigenvector');
-title('Scatter Plot of Data in the Eigenspace');
-grid on;
+if size(U, 2) >= 3
+    scatter3(U(:, 1), U(:, 2), U(:, 3), 10, idx, 'filled');
+    colormap(colors); % Apply the colormap
+    xlabel('First Eigenvector');
+    ylabel('Second Eigenvector');
+    zlabel('Third Eigenvector');
+    title(sprintf('Scatter Plot of Data in the Eigenspace (3D) on %s', upper(dataset)));
+else
+    scatter(U(:, 1), U(:, 2), 10, idx, 'filled');
+    colormap(colors); % Apply the colormap
+    xlabel('First Eigenvector');
+    ylabel('Second Eigenvector');
+    title(sprintf('Scatter Plot of Data in the Eigenspace (2D) on %s', upper(dataset)));
+    grid on;
+end
 
 %% Plot of the clustering results
 
@@ -234,14 +264,15 @@ if size(X, 2) == 3
     ylabel('Y-axis');
     zlabel('Z-axis');
     axis equal;
-    title('Spectral Clustering - Cluster Assignments (3D)');
+    title(sprintf('Spectral Clustering - Cluster Assignments (3D) on %s', upper(dataset)));
 elseif size(X, 2) == 2
     scatter(X(:, 1), X(:, 2), 10, idx, 'filled'); % 2D scatter plot, filled
     colormap(colors); % Apply the colormap
     xlabel('X-axis');
     ylabel('Y-axis');
     axis equal;
-    title('Spectral Clustering - Cluster Assignments (2D)');
+    title(sprintf('Spectral Clustering - Cluster Assignments (2D) on %s', upper(dataset)));
+    grid on;
 end
 
 %% Final
