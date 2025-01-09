@@ -2,7 +2,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'spiral'; % Change this variable to switch between datasets
+dataset = 'torus'; % Change this variable to switch between datasets
 
 switch dataset
 
@@ -23,11 +23,14 @@ switch dataset
         error('Unknown dataset.');
 end
 
-[n, m] = size(X); % Get the dimensionality of data for later use
+[n, ~] = size(X); % Get the dimensionality of data for later use
 
-M = 3; % Number of clusters to find (ignored if dbscan is used)
+M = 2; % Number of clusters to find (ignored if dbscan is used)
 
 assert(M < n, 'The number of clusters must be less than the number of data points.');
+
+fprintf('Dataset: %s\n', dataset);
+fprintf('Number of clusters (M): %d\n', M);
 
 %% Construct Similarity Matrix S
 % Compute the similarity matrix S using the Gaussian function. 
@@ -43,9 +46,13 @@ sigma = 1; % Define the scale parameter for the Gaussian similarity
 % Compute the similarity matrix S using the Gaussian function
 S = exp(-distance_matrix / (2 * sigma^2));
 
+fprintf('Sigma for Gaussian similarity: %.2f\n', sigma);
+
 %% Construct K-Nearest Neighbors (kNN) Matrix
 k = 10; % Set the number of neighbors to [10, 20, 40]
 assert(k < n, 'The number of neighbors must be less than the number of data points.');
+
+fprintf('Number of neighbors (k): %d\n', k);
 
 [~, kNN] = maxk(S, k, 2); % Find the k nearest neighbors for each point
 
@@ -91,12 +98,14 @@ L = sparse(L);
 % Plot the sparsity pattern of L
 figure;
 spy(L);
-title(sprintf('Laplacian Matrix Sparsity Pattern of %s', upper(dataset)));
+title(sprintf('Laplacian Matrix Sparsity Pattern (KNN = %d) of %s', k, upper(dataset)));
 
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
 eigen_method = 'deflation'; % Change this variable to switch between methods
+
+fprintf('Eigenvalue calculation method: %s\n', eigen_method);
 
 warning('off', 'MATLAB:nearlySingularMatrix'); % Turn off warnings for nearly singular matrices
 tic; % Start the timer
@@ -126,7 +135,7 @@ hold on;
 plot(1:M, diag(diagonal_selected_eigenvalues), 'ro');
 xlabel('Eigenvalue Index');
 ylabel('Eigenvalue Magnitude');
-title(sprintf('Elbow Graph of 20 Smallest Eigenvalues of Lapliacian of %s', upper(dataset)));
+title(sprintf('Elbow Graph of 20 Smallest Eigenvalues of Lapliacian (KNN = %d) of %s', k, upper(dataset)));
 legend('All Eigenvalues', 'Selected Eigenvalues');
 grid on;
 
@@ -142,13 +151,14 @@ end
 % Plot the silhouette scores
 figure;
 plot(1:10 * M, silhouette_scores, 'o-');
-xlabel('Number of Eigenvectors (m)');
+xlabel('Number of Eigenvectors (M)');
 ylabel('Silhouette Score');
 title(sprintf('Silhouette Scores for Different Values of M (KNN = %d) on %s', k, upper(dataset)));
 grid on;
 
 %% Perform clustering on the eigenspace
 clustering_method = 'kmeans'; % Change this variable to switch between clustering methods
+fprintf('Clustering method: %s\n', clustering_method);
 
 switch clustering_method
 
@@ -244,13 +254,13 @@ if size(U, 2) >= 3
     xlabel('First Eigenvector');
     ylabel('Second Eigenvector');
     zlabel('Third Eigenvector');
-    title(sprintf('Scatter Plot of Data in the Eigenspace (3D) on %s', upper(dataset)));
+    title(sprintf('Scatter Plot of Data in the Eigenspace (KNN = %d) on %s', k, upper(dataset)));
 else
     scatter(U(:, 1), U(:, 2), 10, idx, 'filled');
     colormap(colors); % Apply the colormap
     xlabel('First Eigenvector');
     ylabel('Second Eigenvector');
-    title(sprintf('Scatter Plot of Data in the Eigenspace (2D) on %s', upper(dataset)));
+    title(sprintf('Scatter Plot of Data in the Eigenspace (KNN = %d) on %s', k, upper(dataset)));
     grid on;
 end
 
@@ -264,14 +274,14 @@ if size(X, 2) == 3
     ylabel('Y-axis');
     zlabel('Z-axis');
     axis equal;
-    title(sprintf('Spectral Clustering - Cluster Assignments (3D) on %s', upper(dataset)));
+    title(sprintf('Spectral Clustering (KNN = %d) on %s', k, upper(dataset)));
 elseif size(X, 2) == 2
     scatter(X(:, 1), X(:, 2), 10, idx, 'filled'); % 2D scatter plot, filled
     colormap(colors); % Apply the colormap
     xlabel('X-axis');
     ylabel('Y-axis');
     axis equal;
-    title(sprintf('Spectral Clustering - Cluster Assignments (2D) on %s', upper(dataset)));
+    title(sprintf('Spectral Clustering (KNN = %d) on %s', k, upper(dataset)));
     grid on;
 end
 
