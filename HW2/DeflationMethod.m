@@ -12,7 +12,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
 
     % Set default values for optional parameters
     if nargin < 3
-        max_iter = 1000; % Default maximum number of iterations
+        max_iter = 100; % Default maximum number of iterations
     end
     if nargin < 4
         rel_tol = 1e-6; % Default relative tolerance
@@ -25,7 +25,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
 
     % Initial guess for eigenvector
     v_0 = ones(n, 1); % Can use random values instead
-    p = 0; % Shift for inverse power method (adjust if needed)
+    p = 0; % Shift for inverse power method
     
     
     % Initial values for iterating
@@ -34,7 +34,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     P_total = eye(n); % Start with no reflection
     
     % Iteration
-    while i <= m
+    while i <= min(m, M)
         
         % *** Reflector and eigenpair computing *** %
         
@@ -54,6 +54,8 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         B = P * B * P;
         lambda = B(i, i);
         D(i, i) = lambda; % Save the eigenvalue
+
+        p = lambda; % Update the shift to help convergence
         
         % Extract eigenvector correction
         x_correction = zeros(i-1, 1);
@@ -80,13 +82,6 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     end
 
     % Sort the results for returning the smallest
-    [~, idx] = sort(diag(D), 'ascend');
-    D = D(idx, idx);
     D = D(1:M, 1:M);
-    V = V(:, idx);
-
-    % % Return the M smallest eigenvalues and eigenvectors
-    D = D(:, 1:M);
     V = V(:, 1:M);
-
 end

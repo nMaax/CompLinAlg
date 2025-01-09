@@ -2,7 +2,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'spiral'; % Change this variable to switch between datasets
+dataset = 'torus'; % Change this variable to switch between datasets
 
 switch dataset
 
@@ -112,7 +112,7 @@ tic; % Start the timer
 switch eigen_method
 
     case 'deflation'
-        [eigenvectors, small_eigenvalues] = DeflationMethod(L, M*10); % Extract more eigenvalues for elbow plotting and silhouette comparison
+        [eigenvectors, small_eigenvalues] = DeflationMethod(L, 80); % Extract more eigenvalues for elbow plotting and silhouette comparison
         
     case 'builtin'
         [eigenvectors, small_eigenvalues] = eigs(L, M*10, 'smallestabs'); % Extract more eigenvalues for elbow plotting and silhouette comparison
