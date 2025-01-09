@@ -1,9 +1,9 @@
 function [s_eigval, s_eigvec] = InversePowerMethod(A, v_0, p, max_iter, rel_tol)
-    % INVERSEPOWERMETHOD Compute the eigenvalue of A closest to p using the inverse power method
+    % Compute the eigenvalue of A closest to p using the inverse power method
     %   Inputs:
-    %       A        - (n x n) real or complex square matrix.
+    %       A        - (n x n) square matrix.
     %       v_0      - Initial guess for the eigenvector (n x 1 vector).
-    %       p        - Eigenvalue target, closest to p.
+    %       p        - Target eigenvalue, the method finds the eigenvalue closest to p.
     %       max_iter - Maximum number of iterations allowed.
     %       rel_tol  - Relative tolerance for convergence (stopping criterion).
     %

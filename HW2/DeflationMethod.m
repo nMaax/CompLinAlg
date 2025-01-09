@@ -1,14 +1,15 @@
 function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
-    % DeflationMethod: Compute the M smallest eigenvalues and eigenvectors of a symmetric matrix
-    % Input:
-    %   A - symmetric matrix, 
-    %   M - number of smallest eigenvalues to return
-    %   max_iter - maximum number of iterations for inverse power method 
-    %   rel_tol - tolerance for convergence for inverse power method
-    % 
-    % Output: 
-    %   V - eigenvector matrix, 
-    %   D - eigenvalue matrix
+    % Compute the M smallest eigenvalues and eigenvectors of a symmetric matrix using the deflation method.
+    %
+    % Inputs:
+    %   A        - Symmetric matrix (n x n)
+    %   M        - Number of smallest eigenvalues to return (scalar)
+    %   max_iter - Maximum number of iterations for the inverse power method (scalar)
+    %   rel_tol  - Tolerance for convergence for the inverse power method (scalar)
+    %
+    % Outputs:
+    %   V - Matrix containing the eigenvectors (n x M)
+    %   D - Diagonal matrix containing the eigenvalues (M x M)
 
     % Set default values for optional parameters
     if nargin < 3
@@ -36,7 +37,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     % Iteration
     while i <= min(m, M)
         
-        % *** Reflector and eigenpair computing *** %
+        % *** Reflector and eigenvalue computing *** %
         
         % Pick the submatrix Ai from B for the following iteration
         Ai = B(i:end, i:end);
@@ -57,11 +58,14 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
 
         p = lambda; % Update the shift to help convergence
         
-        % Extract eigenvector correction
+        % *** Eigenvector correction *** %
+        
+        % Compute the correction to the eigenvector
         x_correction = zeros(i-1, 1);
         for j = i-1:-1:1
-            lambda_prev = D(j, j);
+            lambda_prev = D(j, j); % Previous eigenvalue
             if lambda ~= lambda_prev
+                % Compute the correction
                 b_corr = B_prev(j, j+1:end);
                 x_correction(j) = - (b_corr * [x_correction(j+1:end); x_bar]) / (lambda_prev - lambda);
             else
@@ -81,7 +85,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
         i = i+1;
     end
 
-    % Sort the results for returning the smallest
+    % Sort the results for returning the smallest eigepairs
     D = D(1:M, 1:M);
     V = V(:, 1:M);
 end

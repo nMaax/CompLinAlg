@@ -1,25 +1,33 @@
+% Randomly generate points on two tori and combine them into a single data matrix.
+
+% Radius and thickness of the first torus
 R1 = 3; 
 r1 = 1; 
 
+% Radius and thickness of the second torus
 R2 = 7; 
 r2 = 1; 
 
+% Random angles
 theta1 = 2 * pi * rand(300, 1);
 phi1 = 2 * pi * rand(300, 1);
 theta2 = 2 * pi * rand(600, 1);
 phi2 = 2 * pi * rand(600, 1);
 
+% Torus 1
 X1 = (R1 + r1 * cos(phi1)) .* cos(theta1);
 Y1 = (R1 + r1 * cos(phi1)) .* sin(theta1);
 Z1 = r1 * sin(phi1);
 
+% Torus 2
 X2 = (R2 + r2 * cos(phi2)) .* cos(theta2);
 Y2 = (R2 + r2 * cos(phi2)) .* sin(theta2);
 Z2 = r2 * sin(phi2);
 
-% Combinazione dei dati
+% Data combination
 X = [X1; X2];
 Y = [Y1; Y2];
 Z = [Z1; Z2];
-% Combinare le coordinate in una matrice
+
+% Data matrix
 data = [X, Y, Z];

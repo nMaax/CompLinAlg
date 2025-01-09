@@ -19,9 +19,6 @@ M = 2; % Number of eigenvalues to compute
 % Compute eigenvalues and eigenvectors using MATLAB's built-in function
 [V_builtin, D_builtin] = eigs(A, M, 'sm');
 
-% [D_builtin, idx_builtin] = sort(diag(D_builtin), 'descend');
-% V_builtin = V_builtin(:, idx_builtin);
-
 % Display results
 disp('Eigenvalues from DeflationMethod:');
 disp(D_deflation);

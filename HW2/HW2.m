@@ -2,7 +2,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'torus'; % Change this variable to switch between datasets
+dataset = 'spiral'; % Change this variable to switch between datasets
 
 switch dataset
 
@@ -25,7 +25,7 @@ end
 
 [n, ~] = size(X); % Get the dimensionality of data for later use
 
-M = 2; % Number of clusters to find (ignored if dbscan is used)
+M = 3; % Number of clusters to find (ignored if dbscan is used)
 
 assert(M < n, 'The number of clusters must be less than the number of data points.');
 

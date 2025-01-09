@@ -1,3 +1,5 @@
+% *** DEFLATION METHOD ITERATION BY ITERATION FOR UNDERSTANDING THE PROCEDURE *** %
+
 clear; close all; clc;
 
 % Power
@@ -91,7 +93,7 @@ x3_bar = [alpha; beta; x3_bar];
 x3 = P1 * P2 * x3_bar; % save in V
 V(:, 3) = x3;
 
-% CONTINUE ...
+% *** CONTINUE ... *** %
 
 disp(D);
 disp(V);

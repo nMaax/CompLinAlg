@@ -26,10 +26,10 @@ fprintf('Corresponding Eigenvector: \n');
 disp(s_eigvec);
 
 % Verify the result with A * x = lambda * x
-Ax = A * s_eigvec;             % Compute A * x
+Ax = A * s_eigvec;              % Compute A * x
 lambda_x = s_eigval * s_eigvec; % Compute lambda * x
 
-% Display the verification result
+% Display the result
 fprintf('A * x (matrix-vector multiplication): \n');
 disp(Ax);
 fprintf('lambda * x (eigenvalue times eigenvector): \n');
