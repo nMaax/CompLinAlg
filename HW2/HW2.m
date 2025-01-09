@@ -2,7 +2,7 @@
 clear; clc; close all;
 
 % Choose dataset to load
-dataset = 'torus'; % Change this variable to switch between datasets
+dataset = 'spiral'; % Change this variable to switch between datasets
 
 switch dataset
 
@@ -135,7 +135,7 @@ hold on;
 plot(1:M, diag(diagonal_selected_eigenvalues), 'ro');
 xlabel('Eigenvalue Index');
 ylabel('Eigenvalue Magnitude');
-title(sprintf('Elbow Graph of 20 Smallest Eigenvalues of Lapliacian (KNN = %d) of %s', k, upper(dataset)));
+title(sprintf('Elbow Graph of Smallest Eigenvalues of Lapliacian (KNN = %d) of %s', k, upper(dataset)));
 legend('All Eigenvalues', 'Selected Eigenvalues');
 grid on;
 
