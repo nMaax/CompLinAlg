@@ -1,14 +1,26 @@
 # Instructions to Run `HW2`
 
 ## Prerequisites
-1. MATLAB.
-2. Machine Learning toolbox.
+1. MATLAB
+2. Machine Learning toolbox
 
 ## How to run our project
 
-Our project can be run by simply executing `HW2.m`. This will automatically produce a spectral clustering and other useful plots on the dataset set at the start of the file.
+Our project can be run by simply executing `HW2.m`. This will automatically produce a spectral clustering and other useful plots on the dataset set at the start of the file. Which can be choosen on line 5 among
+- `spiral`
+- `circle`
+- `torus` (our personal dataset)
 
-Inside HW2.m different parameters can be set
+We use k = 10 as default for k-means. We implemented all requirements and optionals of the Homework provided.
 
-- On line 5 one can choose among 3 datasets
-- On line 28 one can decide how many clusters are required as final output
+The various functions implemented are available in the respective matlab files, namely:
+
+- `DeflationMethod.m`     is a matlab functon implementing the Deflation Method
+- `InversePowerMethod.m`  is a matlab functon implementing the Inverse Power Method
+- `deflation_iter_by.m`   is a script we wrote to understand how to build the Deflation Method, running the first 3 iterations of it without using loops, it can be ignored since it is not used in the execution of `HW2.m`
+- `test_def.m`            is a simple script we used to test our implementation of the Deflation Method, it can be ignored since it is not used in the execution of `HW2.m`
+- `test_def.m`            is a simple script we used to test our implementation of the Inverse Power Method, it can be ignored since it is not used in the execution of `HW2.m`
+- `torus_construction.m`  is the script we used to build the third personal syntetich dataset that plots two concentric torus, it produces the same data reported in `torus_coordinates.csv` which are then used in HW2.m, this file can be ignored since it is not use during the execution of `HW2.m`
+
+> ***NOTE***
+> The foreground clustering plot will probably be the k-means applied on raw data, since that is the last one produced in the scropt. The spectral clustering output is available among the background plots. 
