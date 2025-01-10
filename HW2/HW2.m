@@ -99,7 +99,7 @@ title(sprintf('Laplacian Matrix Sparsity Pattern (KNN = %d) of %s', k, upper(dat
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
 M = 20; % Number of eigenpairs to compute
-assert(M < n, 'The number of eigenpairs must be less than the number of data points.');
+assert(M < n, 'The number of eigenpairs to compute must be less than the number of data points.');
 
 eigen_method = 'deflation'; % Change this variable to switch between methods
 
@@ -126,6 +126,7 @@ fprintf('Eigenvalue calculation elapsed time: %.4f seconds\n', eigencalc_elapsed
 %% Evaluate silhouette scores for different values of M, using K-means clustering
 silhouette_scores = zeros(1,M);
 
+% Compute the silhouette scores for different values of M
 for m = 1:M
     % Perform clustering using K-means for each m
     [idx, ~] = kmeans(eigenvectors(:, 1:m), m);
