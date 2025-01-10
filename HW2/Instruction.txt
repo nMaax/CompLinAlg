@@ -2,7 +2,7 @@
 
 ## Prerequisites
 1. MATLAB
-2. Machine Learning toolbox
+2. [Statistics and Machine Learning Toolbox](https://www.mathworks.com/help/stats/)
 
 ## How to run our project
 
@@ -17,10 +17,10 @@ The various functions implemented are available in the respective matlab files, 
 
 - `DeflationMethod.m`     is a matlab functon implementing the Deflation Method
 - `InversePowerMethod.m`  is a matlab functon implementing the Inverse Power Method
-- `deflation_iter_by.m`   is a script we wrote to understand how to build the Deflation Method, running the first 3 iterations of it without using loops, it can be ignored since it is not used in the execution of `HW2.m`
 - `test_def.m`            is a simple script we used to test our implementation of the Deflation Method, it can be ignored since it is not used in the execution of `HW2.m`
 - `test_def.m`            is a simple script we used to test our implementation of the Inverse Power Method, it can be ignored since it is not used in the execution of `HW2.m`
-- `torus_construction.m`  is the script we used to build the third personal syntetich dataset that plots two concentric torus, it produces the same data reported in `torus_coordinates.csv` which are then used in HW2.m, this file can be ignored since it is not use during the execution of `HW2.m`
+- `torus_construction.m`  is the script we used to build the third personal syntetich dataset that plots two concentric torus, it produces the same data reported in `torus_coordinates.csv` which are then used in `HW2.m`, this file can be ignored since it is not directly used during the execution of `HW2.m` (we rather use the final data result stored in `torus_coordinates.csv`)
+- `deflation_iter_by.m`   is a script we wrote to understand how to build the Deflation Method, running the first 3 iterations of it without using loops, it can be ignored since it is not used in the execution of `HW2.m`
 
 > ***NOTE***
-> The foreground clustering plot will probably be the k-means applied on raw data, since that is the last one produced in the scropt. The spectral clustering output is available among the background plots. 
+> The foreground clustering plot window will probably be the k-means applied on raw data, since that is the last one produced in the script. The spectral clustering output will be probably available among the plots produced in the background windows.
