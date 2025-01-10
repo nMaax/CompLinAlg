@@ -74,27 +74,29 @@ for i = 1:n
     
     % Values for W
     values_W(start_idx:end_idx) =  S(i, neigh_of_i);
+    %values_W(i) = 0; % Set the diagonal elements to 0
 end
 
 W = sparse(i_indices, j_indices, values_W, n, n); % Construct the weighted adjacency matrix W
+W = W - diag(diag(W)); % Set the diagonal elements of W to 0
 W = W + W'; % Make the matrix symmetric
 D = spdiags(sum(W, 2), 0, n, n); % Compute the degree matrix D
 
 %% Construct normalized Laplacian Matrix 
-D_inv_sqrt = diag(1 ./ sqrt(diag(D)));
 
 % Compute the unnormalized Laplacian
 % L = D - W;
 
-% Compute L_norm = I - D^(-1/2) * W * D^(-1/2)
-L = eye(n) - D_inv_sqrt * W * D_inv_sqrt;
-L = sparse(L);
+% Compute the sparse D^(-1/2) matrix
+D_inv_sqrt = spdiags(1 ./ sqrt(diag(D)), 0, n, n);
+
+% Compute the normalized Laplacian L = I - D^(-1/2) * W * D^(-1/2)
+L = speye(n) - D_inv_sqrt * W * D_inv_sqrt;
 
 % Plot the sparsity pattern of L
 figure;
 spy(L);
 title(sprintf('Laplacian Matrix Sparsity Pattern (KNN = %d) of %s', k, upper(dataset)));
-
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
