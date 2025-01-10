@@ -20,9 +20,9 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     end
 
     % Preallocate matrices and data
-    [n, m] = size(A); % Size of the matrix
-    D = zeros(m); % Eigenvalue matrix
-    V = zeros(n, m); % Eigenvector matrix
+    [n, ~] = size(A); % Size of the matrix
+    D = zeros(n); % Eigenvalue matrix
+    V = zeros(n, n); % Eigenvector matrix
 
     % Initial guess for eigenvector
     v_0 = ones(n, 1); % Can use random values instead
@@ -35,7 +35,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     P_total = eye(n); % Start with no reflection
     
     % Iteration
-    while i <= min(m, M)
+    while i <= min(n, M)
         
         % *** Reflector and eigenvalue computing *** %
         

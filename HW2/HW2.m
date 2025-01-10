@@ -285,5 +285,26 @@ elseif size(X, 2) == 2
     grid on;
 end
 
+%% Plot the clustering provided by k-means on the original data
+figure;
+[idx, ~] = kmeans(X, M);
+if size(X, 2) == 3
+    scatter3(X(:, 1), X(:, 2), X(:, 3), 10, idx, 'filled'); % 3D scatter plot
+    colormap(colors); % Apply the colormap
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    zlabel('Z-axis');
+    axis equal;
+    title(sprintf('K-means Clustering on Original Data (KNN = %d) on %s', k, upper(dataset)));
+elseif size(X, 2) == 2
+    scatter(X(:, 1), X(:, 2), 10, idx, 'filled'); % 2D scatter plot, filled
+    colormap(colors); % Apply the colormap
+    xlabel('X-axis');
+    ylabel('Y-axis');
+    axis equal;
+    title(sprintf('K-means Clustering on Original Data (KNN = %d) on %s', k, upper(dataset)));
+    grid on;
+end
+
 %% Final
 fprintf('*** End ***\n');
