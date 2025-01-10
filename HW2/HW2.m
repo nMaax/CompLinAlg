@@ -25,12 +25,7 @@ end
 
 [n, ~] = size(X); % Get the dimensionality of data for later use
 
-M = 3; % Number of clusters to find (ignored if dbscan is used)
-
-assert(M < n, 'The number of clusters must be less than the number of data points.');
-
 fprintf('Dataset: %s\n', dataset);
-fprintf('Number of clusters (M): %d\n', M);
 
 %% Construct Similarity Matrix S
 % Compute the similarity matrix S using the Gaussian function. 
@@ -103,6 +98,9 @@ title(sprintf('Laplacian Matrix Sparsity Pattern (KNN = %d) of %s', k, upper(dat
 
 %% Perform the M smallest eigenvalues and the corrispective eigenvectors
 
+M = 20; % Number of eigenpairs to compute
+assert(M < n, 'The number of eigenpairs must be less than the number of data points.');
+
 eigen_method = 'deflation'; % Change this variable to switch between methods
 
 fprintf('Eigenvalue calculation method: %s\n', eigen_method);
@@ -112,10 +110,10 @@ tic; % Start the timer
 switch eigen_method
 
     case 'deflation'
-        [eigenvectors, small_eigenvalues] = DeflationMethod(L, M*10); % Extract more eigenvalues for elbow plotting and silhouette comparison
+        [eigenvectors, small_eigenvalues] = DeflationMethod(L, M); % Extract more eigenvalues for elbow plotting and silhouette comparison
         
     case 'builtin'
-        [eigenvectors, small_eigenvalues] = eigs(L, M*10, 'smallestabs'); % Extract more eigenvalues for elbow plotting and silhouette comparison
+        [eigenvectors, small_eigenvalues] = eigs(L, M, 'smallestabs'); % Extract more eigenvalues for elbow plotting and silhouette comparison
         
     otherwise
         error('Unknown method for eigenpairs extraction.');
@@ -124,6 +122,31 @@ eigencalc_elapsed_time = toc; % Stop the timer
 warning('on', 'MATLAB:nearlySingularMatrix'); % Turn warnings back on
 
 fprintf('Eigenvalue calculation elapsed time: %.4f seconds\n', eigencalc_elapsed_time); % Print the elapsed time
+
+%% Evaluate silhouette scores for different values of M, using K-means clustering
+silhouette_scores = zeros(1,M);
+
+for m = 1:M
+    % Perform clustering using K-means for each m
+    [idx, ~] = kmeans(eigenvectors(:, 1:m), m);
+    silhouette_scores(m) = mean(silhouette(eigenvectors(:, 1:m), idx));
+end
+
+% Plot the silhouette scores
+figure;
+plot(1:M, silhouette_scores, 'o-');
+xlabel('Number of Eigenvectors (M)');
+ylabel('Silhouette Score');
+title(sprintf('Silhouette Scores for Different Values of M (KNN = %d) on %s', k, upper(dataset)));
+grid on;
+
+% Choose the best M based on the highest silhouette score
+[~, best_M] = max(silhouette_scores);
+fprintf('Best number of clusters (M) based on silhouette score: %d\n', best_M);
+
+M = best_M; % Re-assign the best M based on the silhouette score
+
+%% Select the M smallest eigenvalues and the corresponding eigenvectors
 
 diagonal_selected_eigenvalues = small_eigenvalues(1:M,1:M); % Select the M smallest eigenvalues
 U = eigenvectors(:,1:M); % Eigenspace spanned by the smallest eigenvalues on which we will perform clustering
@@ -137,23 +160,6 @@ xlabel('Eigenvalue Index');
 ylabel('Eigenvalue Magnitude');
 title(sprintf('Elbow Graph of Smallest Eigenvalues of Lapliacian (KNN = %d) of %s', k, upper(dataset)));
 legend('All Eigenvalues', 'Selected Eigenvalues');
-grid on;
-
-%% Evaluate silhouette scores for different values of M, using K-means clustering
-silhouette_scores = zeros(1, 10 * M);
-
-for m = 1:10*M
-    % Perform clustering using K-means for each m
-    [idx, ~] = kmeans(eigenvectors(:, 1:m), m);
-    silhouette_scores(m) = mean(silhouette(eigenvectors(:, 1:m), idx));
-end
-
-% Plot the silhouette scores
-figure;
-plot(1:10 * M, silhouette_scores, 'o-');
-xlabel('Number of Eigenvectors (M)');
-ylabel('Silhouette Score');
-title(sprintf('Silhouette Scores for Different Values of M (KNN = %d) on %s', k, upper(dataset)));
 grid on;
 
 %% Perform clustering on the eigenspace

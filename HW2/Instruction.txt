@@ -1,0 +1,14 @@
+# Instructions to Run `HW2`
+
+## Prerequisites
+1. MATLAB.
+2. Machine Learning toolbox.
+
+## How to run our project
+
+Our project can be run by simply executing `HW2.m`. This will automatically produce a spectral clustering and other useful plots on the dataset set at the start of the file.
+
+Inside HW2.m different parameters can be set
+
+- On line 5 one can choose among 3 datasets
+- On line 28 one can decide how many clusters are required as final output
