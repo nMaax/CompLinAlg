@@ -11,7 +11,7 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     %   V - Matrix containing the eigenvectors (n x M)
     %   D - Diagonal matrix containing the eigenvalues (M x M)
 
-    % Set default values for optional parameters
+    % Set default values for optional parameters for Inverse Power Method
     if nargin < 3
         max_iter = 100; % Default maximum number of iterations
     end
@@ -20,7 +20,13 @@ function [V, D] = DeflationMethod(A, M, max_iter, rel_tol)
     end
 
     % Preallocate matrices and data
-    [n, ~] = size(A); % Size of the matrix
+    [n, m] = size(A); % Size of the matrix
+
+    % Check if the matrix is square
+    if n ~= m
+        error('Matrix must be square');
+    end
+
     D = zeros(n); % Eigenvalue matrix
     V = zeros(n, n); % Eigenvector matrix
 
