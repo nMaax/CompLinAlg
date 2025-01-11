@@ -124,6 +124,8 @@ eigencalc_elapsed_time = toc; % Stop the timer
 warning('on', 'MATLAB:nearlySingularMatrix'); % Turn warnings back on
 
 fprintf('Eigenvalue calculation elapsed time: %.4f seconds\n', eigencalc_elapsed_time); % Print the elapsed time
+fprintf('Number of computed eigenvalues: %d\n', size(small_eigenvalues, 1)); % Print the number of computed eigenvalues
+fprintf('Number of connected components: %d\n', sum(diag(small_eigenvalues) < 1e-4)); % Count the number of connected components
 
 %% Evaluate silhouette scores for different values of M, using K-means clustering
 silhouette_scores = zeros(1,M);
@@ -304,14 +306,14 @@ if size(X, 2) == 3
     ylabel('Y-axis');
     zlabel('Z-axis');
     axis equal;
-    title(sprintf('K-means Clustering on Original Data (KNN = %d) on %s', k, upper(dataset)));
+    title(sprintf('K-means Clustering on Original Data %s', upper(dataset)));
 elseif size(X, 2) == 2
     scatter(X(:, 1), X(:, 2), 10, idx, 'filled'); % 2D scatter plot, filled
     colormap(colors); % Apply the colormap
     xlabel('X-axis');
     ylabel('Y-axis');
     axis equal;
-    title(sprintf('K-means Clustering on Original Data (KNN = %d) on %s', k, upper(dataset)));
+    title(sprintf('K-means Clustering on Original Data %s', upper(dataset)));
     grid on;
 end
 
