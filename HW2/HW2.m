@@ -299,6 +299,7 @@ end
 %% Plot the clustering provided by k-means on the original data
 figure;
 [idx, ~] = kmeans(X, M);
+colors = lines(max(idx)); % Use the 'lines' colormap for better visibility on white background
 if size(X, 2) == 3
     scatter3(X(:, 1), X(:, 2), X(:, 3), 10, idx, 'filled'); % 3D scatter plot
     colormap(colors); % Apply the colormap
