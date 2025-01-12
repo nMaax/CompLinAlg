@@ -1,9 +1,8 @@
 import numpy as np
 import scipy as sp
-from Bidiagonalizer import Bidiagonalizer
-from permuted_qr import permuted_qr
-from sklearn.decomposition import TruncatedSVD
+from bidiagonalize import bidiagonalize
 
+# TODO: Change interface to scikit one
 class SVD:
     def __init__(self, A, n_components):
         
@@ -23,11 +22,11 @@ class SVD:
 
     def compute_svd(self):
 
-        # Bidiagonalize the matrix # TODO: turn into function
-        B, _, H = Bidiagonalizer(self.A).bidiagonalize()
+        # Bidiagonalize the matrix
+        B, _, H = bidiagonalize(A)
 
         # Compute Q 
-        _, Q_tilde = np.linalg.eig(B.T @ B)
+        _, Q_tilde = sp.linalg.eig(B.T @ B)
         Q = H @ Q_tilde
 
         # Compute C
@@ -35,7 +34,6 @@ class SVD:
 
         # Compute the permuted QR factorization of C
         U, R, P = sp.linalg.qr(a=C, pivoting=True)
-        print("diag of R: ", np.diag(R))
 
         # Select only the first n_components
         U = U[:, :self.n_components]
@@ -53,6 +51,8 @@ class SVD:
 # Test the SVD class
 if __name__ == "__main__":
     
+    from sklearn.decomposition import TruncatedSVD
+
     np.random.seed(42)
 
     # Create a random matrix A
