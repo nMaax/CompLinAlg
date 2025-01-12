@@ -19,7 +19,7 @@ class SVD:
     
 
     def get_decomposition(self):
-        return self.U, self.sigma, self.V.T
+        return self.U, self.sigma, self.V
 
     def compute_svd(self):
 
@@ -37,7 +37,7 @@ class SVD:
         U, R, P = sp.linalg.qr(C, pivoting=True) #self.permuted_qr(C)
 
         # Select only the first n_components
-        U = U[:, :n_components]
+        U = U[:, :self.n_components]
         U[np.abs(U) < self.tol] = 0
 
         sigma = R[:self.n_components, :self.n_components]
@@ -76,8 +76,7 @@ if __name__ == "__main__":
     A = np.random.rand(6, 4)  # 6x4 matrix
 
     # Print the results
-    print()
-    print("Matrix A\n")
+    print("\nMatrix A\n")
     print(A)
     
     # Specify the number of components for the truncated SVD
@@ -92,12 +91,12 @@ if __name__ == "__main__":
     U, sigma, V = svd.get_decomposition()
 
     print("\n*** My SVD *** ")
-    print("\nMatrix U (reduced to n_components):")
+    print("\nMatrix U")
     print(U)
-    print("\nMatrix Sigma (reduced to n_components):")
+    print("\nMatrix Sigma")
     print(sigma)
-    print("\nMatrix V (reduced to n_components):")
-    print(V)
+    print("\nMatrix V.T")
+    print(V.T)
 
     print("\nU @ sigma @ V.T")
     print(U @ sigma @ V.T)
@@ -108,11 +107,11 @@ if __name__ == "__main__":
     X_svd = svd.fit_transform(A)
 
     print("\n*** Builtin SVD *** ")
-    print("\nMatrix U (reduced to n_components):")
+    print("\nMatrix U")
     print(X_svd)
-    print("\nMatrix Sigma (reduced to n_components):")
+    print("\nMatrix Sigma")
     print(svd.singular_values_)
-    print("\nMatrix V (reduced to n_components):")
-    print(svd.components_)
+    print("\nMatrix V.T")
+    print(svd.components_.T)
 
     print()
