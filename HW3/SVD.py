@@ -3,31 +3,31 @@ import scipy as sp
 from bidiagonalize import bidiagonalize
 
 class SVD:
-    def __init__(self, n_components, atol=1e-8):
-        
+    def __init__(self, n_components=None, atol=1e-8):
         self.n_components = n_components
         self.atol = atol
 
     def fit(self, X, y=None):
-        self.fit_transform(X)
         return self
 
     def transform(self, X):
-        return self.fit_transform(X)
-
-    def fit_transform(self, X, y=None):
         U, Sigma, V = self.__compute_svd(X)
         
-        U = U[:, :self.n_components]
-        U[np.abs(U) < self.atol] = 0
+        if self.n_components:
+            U = U[:, :self.n_components]
+            Sigma = Sigma[:self.n_components, :self.n_components]        
+            V = V[:, :self.n_components]
 
-        Sigma = Sigma[:self.n_components, :self.n_components]
-        Sigma[np.abs(Sigma) < self.atol] = 0
-        
-        V = V[:, :self.n_components]
-        V[np.abs(V) < self.atol] = 0
+        if self.atol:
+            U[np.abs(U) < self.atol] = 0
+            V[np.abs(V) < self.atol] = 0
+            Sigma[np.abs(Sigma) < self.atol] = 0
 
         return U, Sigma, V
+
+    def fit_transform(self, X, y=None):
+        self.fit(X)
+        return self.transform(X)
 
     def __compute_svd(self, A):
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     print(A)
     
     # Specify the number of components for the truncated SVD
-    n_components = 6
+    n_components = None
 
     # *** My SVD *** #
     U, Sigma, V = SVD(n_components).fit_transform(A)
