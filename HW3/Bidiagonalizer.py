@@ -1,14 +1,21 @@
 import numpy as np
 
-class bidiagonalization():
+class Bidiagonalizer():
     def __init__(self, A):
+        
+        m, n = A.shape
+        if (m < n):
+            raise ValueError("Matrix must respect shape s.t m >= n, shape (m={m}, n={n}) was given.")
+        
+        self.m = m
+        self.n = n
+
         self.B = A
-        self.m, self.n = A.shape
         self.P = np.eye(self.m)
         self.H = np.eye(self.n)
+
         self.tol = 1e-8
-        self.bidiagonalize()
-        
+    
     def bidiagonalize(self):
         
         for k in range(self.n):
@@ -26,24 +33,11 @@ class bidiagonalization():
                 H_transformation[k+1:self.n, k+1:self.n] = Bx
                 self.B = self.B @ H_transformation
                 self.H = H_transformation @ self.H
+
         self.B[np.abs(self.B) < self.tol] = 0  
-        return self.B, self.H  
-    
-    def getP(self):
-        return self.P
-    
-    def getH(self):
-        return self.H
-    
-    def getB(self):
-        return self.B
+        return self.B, self.P, self.H  
     
     def householder_mat(self,x):
-        """
-        Function that compute the reflection matrix of the Householder method for a given vector x.
-        :param x: vector that can be given both as 1D-array object and 2D-array column/row object (numpy ndarray);
-        :return Px: Householder reflection matrix as 2D-array object (numpy ndarray).
-        """
         v = x.reshape(x.size, 1)
         sigma = np.sign(v[0, 0]) * np.linalg.norm(v)
         u = v + sigma * np.eye(v.size, 1)
@@ -52,14 +46,25 @@ class bidiagonalization():
         return Px
     
     def householder_mat_row(self, x):
-        """
-        Function that compute the reflection matrix of the Householder method for a given vector x.
-        :param x: vector that can be given both as 1D-array object and 2D-array column/row object (numpy ndarray);
-        :return Px: Householder reflection matrix as 2D-array object (numpy ndarray).
-        """
         v = x.reshape(1, x.size)
         sigma = np.sign(v[0, 0]) * np.linalg.norm(v)
         u = v + sigma * np.eye(v.size, 1).T
         u = u / np.linalg.norm(u) 
         Px = np.identity(u.size) - 2 * u.T @ u
         return Px
+
+if __name__ == "__main__":
+    
+    # Test the bidiagonalize function with a sample matrix
+    A = np.array([[4, 1, 3], [2, 6, 5], [1, 2, 3], [5, 4, 2]])
+    print("Original matrix A:")
+    print(A)
+
+    B, P, H = Bidiagonalizer(A).bidiagonalize()
+
+    print("\nBidiagonalized matrix B:")
+    print(B)
+
+    # Verify the result
+    print("\nVerification (P @ A @ H.T):")
+    print(np.round(P @ A @ H.T, decimals=8))

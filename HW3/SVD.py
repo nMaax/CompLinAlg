@@ -1,6 +1,6 @@
 import numpy as np
 import scipy as sp
-from Bidiagonal import bidiagonalization
+from Bidiagonalizer import Bidiagonalizer
 from sklearn.decomposition import TruncatedSVD
 
 class SVD:
@@ -15,10 +15,9 @@ class SVD:
     def compute_svd(self):
 
         # Bidiagonalize the matrix # TODO: turn into function
-        Bidiagonal = bidiagonalization(self.A)
-        B, H = Bidiagonal.bidiagonalize()
+        B, _, H = Bidiagonalizer(self.A).bidiagonalize()
         
-        # Compute Q
+        # Compute Q 
         _, Q_tilde = np.linalg.eig(B.T @ B)
         Q = H @ Q_tilde
 
@@ -55,8 +54,10 @@ class SVD:
 
 # Test the SVD class
 if __name__ == "__main__":
-    # Create a random matrix A
+    
     np.random.seed(42)
+
+    # Create a random matrix A
     A = np.random.rand(6, 4)  # 6x4 matrix
 
     # Print the results
@@ -64,12 +65,14 @@ if __name__ == "__main__":
     print("Matrix A\n")
     print(A)
     
-    # Specify the number of components
-    n_components = 3
+    # Specify the number of components for the truncated SVD
+    n_components = 4
+
+    # *** Builtin SVD *** #
 
     # Compute the SVD
     svd = SVD(A, n_components)
-
+    
     # Get the decomposition
     V, sigma, U = svd.get_decomposition()
 
@@ -80,6 +83,11 @@ if __name__ == "__main__":
     print(sigma)
     print("\nMatrix V (reduced to n_components):")
     print(V)
+
+    print("\nU @ sigma @ V.T")
+    print(U @ sigma @ V.T)
+
+    # *** Builtin SVD *** #
 
     svd = TruncatedSVD(n_components=n_components)
     X_svd = svd.fit_transform(A)
