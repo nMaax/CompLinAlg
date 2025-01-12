@@ -28,6 +28,33 @@ def bidiagonalize(A):
 
     return B, P, H
 
+def gk_bidiagonalize():
+
+    m, n = A.shape
+    if (m < n):
+        raise ValueError("Matrix must respect shape s.t m >= n, shape (m={m}, n={n}) was given.")
+
+    B = A.copy()
+    P = np.eye(m)
+    H = np.eye(n)
+
+    for k in range(n):
+
+        a = B[k:m, k]
+        P_tilde = np.eye(m)
+        P_tilde[k:m, k:m] = householder(a)
+        B = P_tilde @ B
+        P = P_tilde @ P
+        
+        if k <= n-3: # usig n-2 one singular value becomes positive
+            b = B[k, k+1:n]
+            H_tilde = np.eye(n)
+            H_tilde[k+1:n, k+1:n] = householder(b)
+            B = B @ H_tilde
+            H = H @ H_tilde
+
+    return B, P, H
+
 if __name__ == "__main__":
     
     # Test the bidiagonalize function with a sample matrix

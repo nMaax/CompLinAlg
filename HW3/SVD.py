@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as sp
+from eigenvalues import eigs
 from bidiagonalize import bidiagonalize
 
 class SVD:
@@ -37,7 +38,9 @@ class SVD:
 
         B, _, H = bidiagonalize(A)
 
-        _, Q_tilde = sp.linalg.eig(B.T @ B)
+        #eigvals, Q_tilde = sp.linalg.eig(B.T @ B)
+        evals, Q_tilde = eigs(B.T @ B)  # Symmetric eigen-decomposition
+
         Q = H @ Q_tilde
 
         C = A @ Q
@@ -63,10 +66,10 @@ if __name__ == "__main__":
     print(A)
     
     # Specify the number of components for the truncated SVD
-    n_components = None
+    n_components = 4
 
     # *** My SVD *** #
-    U, Sigma, V = SVD(n_components).fit_transform(A)
+    U, Sigma, V = SVD(None).fit_transform(A)
 
     print("\n*** My SVD *** ")
     print("\nMatrix U")
@@ -90,15 +93,15 @@ if __name__ == "__main__":
 
     # *** Builtin SVD *** #
 
-    # svd = TruncatedSVD(n_components=n_components)
-    # X_svd = svd.fit_transform(A)
+    svd = TruncatedSVD(n_components=n_components)
+    X_svd = svd.fit_transform(A)
 
-    # print("\n*** Builtin SVD *** ")
-    # print("\nMatrix U")
-    # print(X_svd)
-    # print("\nMatrix Sigma")
-    # print(svd.singular_values_)
-    # print("\nMatrix V.T")
-    # print(svd.components_.T)
+    print("\n*** Builtin SVD *** ")
+    print("\nMatrix U")
+    print(X_svd)
+    print("\nMatrix Sigma")
+    print(svd.singular_values_)
+    print("\nMatrix V.T")
+    print(svd.components_)
 
     print()
