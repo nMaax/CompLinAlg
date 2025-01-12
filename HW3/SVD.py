@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
 from Bidiagonalizer import Bidiagonalizer
+from permuted_qr import permuted_qr
 from sklearn.decomposition import TruncatedSVD
 
 class SVD:
@@ -33,7 +34,8 @@ class SVD:
         C = self.A @ Q
 
         # Compute the permuted QR factorization of C
-        U, R, P = sp.linalg.qr(C, pivoting=True) #self.permuted_qr(C)
+        #U, R, P = sp.linalg.qr(C, pivoting=True) #self.permuted_qr(C)
+        U, R, P = permuted_qr(C)
 
         # Select only the first n_components
         U = U[:, :self.n_components]
@@ -47,24 +49,6 @@ class SVD:
         V[np.abs(V) < self.tol] = 0
         
         return U, sigma, V
-    
-    # def permuted_qr(self, C):  # TODO: move to another file (givens and householder)
-
-    #     """Compute the permuted QR decomposition of C such that CP = UR,
-    #     where R has diagonal entries sorted in decreasing order."""
-    #     # Perform QR decomposition
-    #     Q, R = np.linalg.qr(C, mode='reduced')
-
-    #     # Compute the permutation to sort the diagonal of R in decreasing order
-    #     diag_abs = np.abs(np.diag(R))
-    #     sorted_indices = np.argsort(-diag_abs)  # Sort diagonals in descending order
-
-    #     # Apply the permutation to R
-    #     P = np.eye(C.shape[1])[:, sorted_indices]  # Create the permutation matrix
-    #     R = R @ P  # Permute the columns of R
-    #     Q = Q  # Q remains unchanged since it is orthogonal
-
-    #    return Q, R, P
 
 # Test the SVD class
 if __name__ == "__main__":
