@@ -34,8 +34,8 @@ class SVD:
         C = self.A @ Q
 
         # Compute the permuted QR factorization of C
-        #U, R, P = sp.linalg.qr(C, pivoting=True) #self.permuted_qr(C)
-        U, R, P = permuted_qr(C)
+        U, R, P = sp.linalg.qr(a=C, pivoting=True)
+        print("diag of R: ", np.diag(R))
 
         # Select only the first n_components
         U = U[:, :self.n_components]
