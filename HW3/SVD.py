@@ -16,7 +16,6 @@ class SVD:
         self.tol = 1e-8
 
         self.U, self.sigma, self.V = self.compute_svd()
-    
 
     def get_decomposition(self):
         return self.U, self.sigma, self.V
@@ -93,25 +92,34 @@ if __name__ == "__main__":
     print("\n*** My SVD *** ")
     print("\nMatrix U")
     print(U)
+
+    # Check if U is an orthogonal matrix
+    U_orthogonal_check = np.allclose(U.T @ U, np.eye(U.shape[1]), atol=svd.tol)
+    print("\nIs U an orthogonal matrix? ", U_orthogonal_check)
+
     print("\nMatrix Sigma")
     print(sigma)
     print("\nMatrix V.T")
     print(V.T)
+
+    # Check if V is an orthogonal matrix
+    V_orthogonal_check = np.allclose(V.T @ V, np.eye(V.shape[1]), atol=svd.tol)
+    print("\nIs V an orthogonal matrix? ", V_orthogonal_check)
 
     print("\nU @ sigma @ V.T")
     print(U @ sigma @ V.T)
 
     # *** Builtin SVD *** #
 
-    svd = TruncatedSVD(n_components=n_components)
-    X_svd = svd.fit_transform(A)
+    # svd = TruncatedSVD(n_components=n_components)
+    # X_svd = svd.fit_transform(A)
 
-    print("\n*** Builtin SVD *** ")
-    print("\nMatrix U")
-    print(X_svd)
-    print("\nMatrix Sigma")
-    print(svd.singular_values_)
-    print("\nMatrix V.T")
-    print(svd.components_.T)
+    # print("\n*** Builtin SVD *** ")
+    # print("\nMatrix U")
+    # print(X_svd)
+    # print("\nMatrix Sigma")
+    # print(svd.singular_values_)
+    # print("\nMatrix V.T")
+    # print(svd.components_.T)
 
     print()
