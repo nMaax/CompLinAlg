@@ -13,8 +13,6 @@ def bidiagonalize(A):
 
     for k in range(n):
 
-        #k = i
-
         a = B[k:m, k]
         P_tilde = np.eye(m)
         P_tilde[k:m, k:m] = householder(a)
