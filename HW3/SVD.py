@@ -79,7 +79,7 @@ if __name__ == "__main__":
     print(A)
     
     # Specify the number of components for the truncated SVD
-    n_components = 4
+    n_components = 6
 
     # *** My SVD *** #
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     # Check if U is an orthogonal matrix
     U_orthogonal_check = np.allclose(U.T @ U, np.eye(U.shape[1]), atol=svd.tol)
-    print("\nIs U an orthogonal matrix? ", U_orthogonal_check)
+    print("Is U an orthogonal matrix? ", U_orthogonal_check)
 
     print("\nMatrix Sigma")
     print(sigma)
@@ -104,10 +104,12 @@ if __name__ == "__main__":
 
     # Check if V is an orthogonal matrix
     V_orthogonal_check = np.allclose(V.T @ V, np.eye(V.shape[1]), atol=svd.tol)
-    print("\nIs V an orthogonal matrix? ", V_orthogonal_check)
+    print("Is V an orthogonal matrix? ", V_orthogonal_check)
 
-    print("\nU @ sigma @ V.T")
-    print(U @ sigma @ V.T)
+    print("\n---\n")
+    reconstruction_check = np.allclose(U @ sigma @ V.T, A, atol=svd.tol)
+    print("Is U @ sigma @ V.T == A? ", reconstruction_check)
+
 
     # *** Builtin SVD *** #
 
