@@ -5,18 +5,27 @@ from sklearn.decomposition import TruncatedSVD
 
 class SVD:
     def __init__(self, A, n_components):
+        
+        m, n = A.shape
+        if (m < n):
+            raise ValueError("Matrix must respect shape s.t m >= n, shape (m={m}, n={n}) was given.")
+        
         self.A = A
         self.n_components = n_components
-        self.V, self.sigma, self.U = self.compute_svd()
+        
+        self.tol = 1e-8
+
+        self.U, self.sigma, self.V = self.compute_svd()
     
+
     def get_decomposition(self):
-        return self.V.T, self.sigma, self.U
+        return self.U, self.sigma, self.V.T
 
     def compute_svd(self):
 
         # Bidiagonalize the matrix # TODO: turn into function
         B, _, H = Bidiagonalizer(self.A).bidiagonalize()
-        
+
         # Compute Q 
         _, Q_tilde = np.linalg.eig(B.T @ B)
         Q = H @ Q_tilde
@@ -28,14 +37,20 @@ class SVD:
         U, R, P = sp.linalg.qr(C, pivoting=True) #self.permuted_qr(C)
 
         # Select only the first n_components
+        U = U[:, :n_components]
+        U[np.abs(U) < self.tol] = 0
+
+        sigma = R[:self.n_components, :self.n_components]
+        sigma[np.abs(sigma) < self.tol] = 0
+        
         V = Q[:, P]
         V = V[:, :self.n_components]
-        sigma = R[:self.n_components, :self.n_components]
-        U = U[:, :n_components]
-
-        return V, sigma, U
+        V[np.abs(V) < self.tol] = 0
+        
+        return U, sigma, V
     
     # def permuted_qr(self, C):  # TODO: move to another file (givens and householder)
+
     #     """Compute the permuted QR decomposition of C such that CP = UR,
     #     where R has diagonal entries sorted in decreasing order."""
     #     # Perform QR decomposition
@@ -68,13 +83,13 @@ if __name__ == "__main__":
     # Specify the number of components for the truncated SVD
     n_components = 4
 
-    # *** Builtin SVD *** #
+    # *** My SVD *** #
 
     # Compute the SVD
     svd = SVD(A, n_components)
     
     # Get the decomposition
-    V, sigma, U = svd.get_decomposition()
+    U, sigma, V = svd.get_decomposition()
 
     print("\n*** My SVD *** ")
     print("\nMatrix U (reduced to n_components):")

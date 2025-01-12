@@ -34,8 +34,8 @@ class Bidiagonalizer():
                 self.B = self.B @ H_transformation
                 self.H = H_transformation @ self.H
 
-        self.B[np.abs(self.B) < self.tol] = 0  
-        return self.B, self.P, self.H  
+        #self.B[np.abs(self.B) < self.tol] = 0  
+        return self.B, self.P, self.H.T
     
     def householder_mat(self,x):
         v = x.reshape(x.size, 1)
@@ -67,4 +67,4 @@ if __name__ == "__main__":
 
     # Verify the result
     print("\nVerification (P @ A @ H.T):")
-    print(np.round(P @ A @ H.T, decimals=8))
+    print(np.round(P @ A @ H, decimals=8))
