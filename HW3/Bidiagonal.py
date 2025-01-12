@@ -7,6 +7,7 @@ class bidiagonalization():
         self.P = np.eye(self.m)
         self.H = np.eye(self.n)
         self.tol = 1e-8
+        self.bidiagonalize()
         
         
     def bidiagonalize(self):
@@ -26,7 +27,7 @@ class bidiagonalization():
                 self.B = self.B @ H_transformation
                 self.H = H_transformation @ self.H
         self.B[np.abs(self.B) < self.tol] = 0  
-        return self.B, self.P, self.H  
+        return self.B, self.H  
     def getP(self):
         return self.P
     
