@@ -1,7 +1,6 @@
 import numpy as np
+import scipy as sp
 from Bidiagonal import bidiagonalization
-from sklearn.decomposition import TruncatedSVD
-
 
 class SVD:
     def __init__(self, A,n_components):
@@ -22,7 +21,7 @@ class SVD:
     
         # FINO A QUI OK DALL'ISTRUZIONE SUCCESSIVA NON VA, SICURAMENTE C'È QUALCHE ERRORE NELLA FUNZIONE PERMUTED_QR
         # DEVE RITORNARE ANCHE U PERCHÈ IL RISULTATO FINALE DEVE ESSERE MAT = U * SIGMA * V^T
-        Q, R, U = self.permuted_qr(C)
+        U, R, P = sp.linalg.qr(C, pivoting=True) #self.permuted_qr(C)
 
         # Select only the first n_components
         V = Q @ P
@@ -30,7 +29,7 @@ class SVD:
         sigma = R
         sigma = sigma[:self.n_components, :self.n_components]
 
-        return V, sigma
+        return V, sigma, U
 
     def get_decomposition(self):
         return self.V, self.sigma
@@ -51,33 +50,3 @@ class SVD:
         Q = Q  # Q remains unchanged since it is orthogonal
 
         return Q, R, P
-
-
-
-# Test the SVD class
-if __name__ == "__main__":
-    # Create a random matrix A
-    np.random.seed(42)
-    A = np.random.rand(6, 4)  # 6x4 matrix
-
-    # Specify the number of components
-    n_components = 3
-
-    # Compute the SVD
-    svd = SVD(A, n_components)
-
-    # Get the decomposition
-    V, sigma = svd.get_decomposition()
-
-    # Print the results
-    print("Matrix A:")
-    print(A)
-    print("\nMatrix V (reduced to n_components):")
-    print(V)
-    print("\nMatrix Sigma (reduced to n_components):")
-    print(sigma)
-
-    svd = TruncatedSVD(n_components=2)
-    X_svd = svd.fit_transform(A)
-    print("\nMatrix V (reduced to n_components):")
-    print(svd.components_)
