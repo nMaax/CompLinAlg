@@ -62,8 +62,3 @@ class bidiagonalization():
         u = u / np.linalg.norm(u) 
         Px = np.identity(u.size) - 2 * u.T @ u
         return Px
-
-
-
-
-
