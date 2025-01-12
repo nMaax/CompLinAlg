@@ -2,7 +2,6 @@ import numpy as np
 import scipy as sp
 from bidiagonalize import bidiagonalize
 
-# TODO: Change interface to scikit one
 class SVD:
     def __init__(self, n_components, atol=1e-8):
         
