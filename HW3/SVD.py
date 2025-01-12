@@ -14,9 +14,9 @@ class SVD:
 
     def compute_svd(self):
 
-        # Bidiagonalize the matrix
+        # Bidiagonalize the matrix # TODO: turn into function
         Bidiagonal = bidiagonalization(self.A)
-        B, H = Bidiagonal.bidiagonalize() # TODO: turn into function
+        B, H = Bidiagonal.bidiagonalize()
         
         # Compute Q
         _, Q_tilde = np.linalg.eig(B.T @ B)
