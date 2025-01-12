@@ -19,7 +19,7 @@ def bidiagonalize(A):
         B = P_tilde @ B
         P = P_tilde @ P
         
-        if k <= n-2:
+        if k <= n-3: # usig n-2 one singular value becomes positive
             b = B[k, k+1:n]
             H_tilde = np.eye(n)
             H_tilde[k+1:n, k+1:n] = householder(b)

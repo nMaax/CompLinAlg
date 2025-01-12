@@ -4,49 +4,50 @@ from bidiagonalize import bidiagonalize
 
 # TODO: Change interface to scikit one
 class SVD:
-    def __init__(self, A, n_components):
+    def __init__(self, n_components, atol=1e-8):
         
+        self.n_components = n_components
+        self.atol = atol
+
+    def fit(self, X, y=None):
+        self.fit_transform(X)
+        return self
+
+    def transform(self, X):
+        return self.fit_transform(X)
+
+    def fit_transform(self, X, y=None):
+        U, Sigma, V = self.__compute_svd(X)
+        
+        U = U[:, :self.n_components]
+        U[np.abs(U) < self.atol] = 0
+
+        Sigma = Sigma[:self.n_components, :self.n_components]
+        Sigma[np.abs(Sigma) < self.atol] = 0
+        
+        V = V[:, :self.n_components]
+        V[np.abs(V) < self.atol] = 0
+
+        return U, Sigma, V
+
+    def __compute_svd(self, A):
+
         m, n = A.shape
         if (m < n):
             raise ValueError("Matrix must respect shape s.t m >= n, shape (m={m}, n={n}) was given.")
-        
-        self.A = A
-        self.n_components = n_components
-        
-        self.tol = 1e-8
 
-        self.U, self.sigma, self.V = self.compute_svd()
-
-    def get_decomposition(self):
-        return self.U, self.sigma, self.V
-
-    def compute_svd(self):
-
-        # Bidiagonalize the matrix
         B, _, H = bidiagonalize(A)
 
-        # Compute Q 
         _, Q_tilde = sp.linalg.eig(B.T @ B)
         Q = H @ Q_tilde
 
-        # Compute C
-        C = self.A @ Q
+        C = A @ Q
 
-        # Compute the permuted QR factorization of C
         U, R, P = sp.linalg.qr(a=C, pivoting=True)
-
-        # Select only the first n_components
-        U = U[:, :self.n_components]
-        U[np.abs(U) < self.tol] = 0
-
-        sigma = R[:self.n_components, :self.n_components]
-        sigma[np.abs(sigma) < self.tol] = 0
-        
+        Sigma = R
         V = Q[:, P]
-        V = V[:, :self.n_components]
-        V[np.abs(V) < self.tol] = 0
         
-        return U, sigma, V
+        return U, Sigma, V
 
 # Test the SVD class
 if __name__ == "__main__":
@@ -66,33 +67,26 @@ if __name__ == "__main__":
     n_components = 6
 
     # *** My SVD *** #
-
-    # Compute the SVD
-    svd = SVD(A, n_components)
-    
-    # Get the decomposition
-    U, sigma, V = svd.get_decomposition()
+    U, Sigma, V = SVD(n_components).fit_transform(A)
 
     print("\n*** My SVD *** ")
     print("\nMatrix U")
     print(U)
 
-    # Check if U is an orthogonal matrix
-    U_orthogonal_check = np.allclose(U.T @ U, np.eye(U.shape[1]), atol=svd.tol)
+    U_orthogonal_check = np.allclose(U.T @ U, np.eye(U.shape[1]))
     print("Is U an orthogonal matrix? ", U_orthogonal_check)
 
     print("\nMatrix Sigma")
-    print(sigma)
+    print(Sigma)
     print("\nMatrix V.T")
     print(V.T)
 
-    # Check if V is an orthogonal matrix
-    V_orthogonal_check = np.allclose(V.T @ V, np.eye(V.shape[1]), atol=svd.tol)
+    V_orthogonal_check = np.allclose(V.T @ V, np.eye(V.shape[1]))
     print("Is V an orthogonal matrix? ", V_orthogonal_check)
 
     print("\n---\n")
-    reconstruction_check = np.allclose(U @ sigma @ V.T, A, atol=svd.tol)
-    print("Is U @ sigma @ V.T == A? ", reconstruction_check)
+    reconstruction_check = np.allclose(U @ Sigma @ V.T, A)
+    print("Is U @ Sigma @ V.T == A? ", reconstruction_check)
 
 
     # *** Builtin SVD *** #
