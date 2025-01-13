@@ -13,7 +13,9 @@ class SVD:
 
     def transform(self, X):
         U, Sigma, V = self.__compute_svd(X)
-        
+        print(Sigma)
+        U, Sigma, V = self.fix_signs(U, Sigma, V)
+        U, Sigma, V = self.sort_singular_values(U, Sigma, V)
         if self.n_components:
             U = U[:, :self.n_components]
             Sigma = Sigma[:self.n_components, :self.n_components]        
@@ -39,10 +41,9 @@ class SVD:
         B, _, H = bidiagonalize(A)
 
         #eigvals, Q_tilde = sp.linalg.eig(B.T @ B)
-        evals, Q_tilde = eigs(B.T @ B)  # Symmetric eigen-decomposition
+        evals, V_tilde = eigs(B.T @ B)  # Symmetric eigen-decomposition
 
-        Q = H @ Q_tilde
-
+        Q = H @ V_tilde
         C = A @ Q
 
         U, R, P = sp.linalg.qr(a=C, pivoting=True)
@@ -50,7 +51,30 @@ class SVD:
         V = Q[:, P]
         
         return U, Sigma, V
+    
+    def fix_signs(self,U, Sigma, V):
+        # Ammettiamo che Sigma sia di shape (r, r), con r = min(m, n)
+        r = min(Sigma.shape[0],Sigma.shape[1])
+        for i in range(r):
+            if Sigma[i, i] < 0:
+                Sigma[i, i] = -Sigma[i, i]  # Rendo positivo
+                #U[:, i]    = -U[:, i]      # Cambio segno alla colonna i di U
+                V[:, i] = -V[:, i]  #(invece di U[:, i], ma non entrambe!)
+        
+        return U, Sigma, V
+    
+    def sort_singular_values(self, U, Sigma, V):
+        # prendi la diagonale
+        diag_S = np.diag(Sigma)
+        idx = np.argsort(diag_S)[::-1]         # Ordine decrescente
+        Sigma_sorted = np.diag(diag_S[idx])    # Ricostruisci diag con l'ordine
+        U_sorted = U[:, idx]
+        V_sorted = V[:, idx]
+        return U_sorted, Sigma_sorted, V_sorted
+    
+    
 
+"""
 # Test the SVD class
 if __name__ == "__main__":
     
@@ -105,3 +129,35 @@ if __name__ == "__main__":
     print(svd.components_)
 
     print()
+    """
+if __name__ == "__main__":
+    np.random.seed(42)
+
+    # Crea una matrice di test, dimensioni 6x4 per esempio
+    A = np.random.rand(6, 4)
+
+    print("\nMatrice A originale:\n", A)
+
+    # Istanzia e applica la tua SVD
+    my_svd = SVD(n_components=None)
+    U, Sigma, V = my_svd.fit_transform(A)
+
+    print("\nU:\n", U)
+    print("\nSigma:\n", Sigma)
+    print("\nV:\n", V)
+    print("\nV.T:\n", V.T)
+
+    # Ricostruisci la matrice: U @ Sigma @ V.T
+    # (Se Sigma è m x n, questa moltiplicazione funziona direttamente.
+    #  Se hai Sigma quadrata min(m,n), adattati di conseguenza.)
+    A_reconstructed = U @ Sigma @ V.T
+
+    print("\nMatrice ricostruita:\n", A_reconstructed)
+
+    # Verifica la differenza
+    diff = np.linalg.norm(A - A_reconstructed)
+    print("\nNorma della differenza (A - U Sigma V^T):", diff)
+
+    # Check con np.allclose
+    is_close = np.allclose(A, A_reconstructed, atol=1e-8)
+    print("Ricostruzione corretta entro tolleranza? ", is_close)
