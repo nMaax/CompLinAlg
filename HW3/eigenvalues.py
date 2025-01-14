@@ -1,16 +1,16 @@
 import numpy as np
 
-def eigs(A, order="descending"):
+def eigs(A, order="descend"):
     # Compute eigenvalues and eigenvectors
     eigenvalues, eigenvectors = np.linalg.eig(A)
     
     # Determine the sorting order
-    if order == "ascending":
-        sorted_indices = np.argsort(eigenvalues)  # Sort in ascending order
-    elif order == "descending":
-        sorted_indices = np.argsort(eigenvalues)[::-1]  # Sort in descending order
+    if order == "ascend":
+        sorted_indices = np.argsort(eigenvalues)  # Sort in ascend order
+    elif order == "descend":
+        sorted_indices = np.argsort(eigenvalues)[::-1]  # Sort in descend order
     else:
-        raise ValueError("Invalid order. Use 'ascending' or 'descending'.")
+        raise ValueError("Invalid order. Use 'ascend' or 'descend'.")
     
     # Sort eigenvalues and eigenvectors
     eigenvalues_sorted = np.diag(eigenvalues[sorted_indices])
@@ -25,19 +25,19 @@ if __name__ == "__main__":
     A = np.array([[4, 2],
                   [1, 3]])
     
-    eigenvalues_desc, eigenvectors_desc = eigs(A, order="descending")
-    eigenvalues_asc, eigenvectors_asc = eigs(A, order="ascending")
+    eigenvalues_desc, eigenvectors_desc = eigs(A, order="descend")
+    eigenvalues_asc, eigenvectors_asc = eigs(A, order="ascend")
     
-    print("Eigenvalues (descending):")
+    print("Eigenvalues (descend):")
     print(eigenvalues_desc)
     
-    print("\nEigenvectors (Q matrix, descending):")
+    print("\nEigenvectors (Q matrix, descend):")
     print(eigenvectors_desc)
     
-    print("\nEigenvalues (ascending):")
+    print("\nEigenvalues (ascend):")
     print(eigenvalues_asc)
     
-    print("\nEigenvectors (Q matrix, ascending):")
+    print("\nEigenvectors (Q matrix, ascend):")
     print(eigenvectors_asc)
 
     print("---")

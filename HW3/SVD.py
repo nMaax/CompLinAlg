@@ -39,7 +39,7 @@ class SVD:
         B, _, H = bidiagonalize(A)
 
         #eigvals, Q_tilde = sp.linalg.eig(B.T @ B)
-        evals, Q_tilde = eigs(B.T @ B)  # Symmetric eigen-decomposition
+        evals, Q_tilde = eigs(B.T @ B, order='descend')  # Symmetric eigen-decomposition
 
         Q = H @ Q_tilde
 
