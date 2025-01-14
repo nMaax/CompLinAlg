@@ -11,7 +11,7 @@ Our project can be run by simply executing `HW2.m`. This will automatically prod
 - `circle`
 - `torus` (our personal dataset)
 
-We use k = 10 as default for k-means. We implemented all requirements and optionals of the Homework provided.
+We use k = 10 as default for k-means (neverthless, this can be adjusted at line 47). M is automatically choosen. We implemented all requirements and optionals of the Homework provided, our implementation of both Deflation and Inverse Power Method are the default option.
 
 The various functions implemented are available in the respective matlab files, namely:
 
