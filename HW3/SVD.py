@@ -13,8 +13,7 @@ class SVD:
         return self
 
     def transform(self, X):
-        U, Sigma, V, H = self.__compute_svd(X)
-        print(Sigma)
+        U, Sigma, V = self.__compute_svd(X)
         U, Sigma, V = self.fix_signs(U, Sigma, V)
         U, Sigma, V = self.sort_singular_values(U, Sigma, V)
         if self.n_components:
@@ -27,7 +26,7 @@ class SVD:
             V[np.abs(V) < self.atol] = 0
             Sigma[np.abs(Sigma) < self.atol] = 0
 
-        return U, Sigma, V, H
+        return U, Sigma, V
 
     def fit_transform(self, X, y=None):
         self.fit(X)
@@ -52,7 +51,7 @@ class SVD:
         Sigma = R
         V = Q[:, P]
         
-        return U, Sigma, V, H
+        return U, Sigma, V
     
     def fix_signs(self,U, Sigma, V):
         # Ammettiamo che Sigma sia di shape (r, r), con r = min(m, n)
@@ -95,8 +94,7 @@ if __name__ == "__main__":
     n_components = 4
 
     # *** My SVD *** #
-    U, Sigma, V, H = SVD(None).fit_transform(A)
-    print(H)
+    U, Sigma, V = SVD(None).fit_transform(A)
 
     print("\n*** My SVD *** ")
     print("\nMatrix U")
