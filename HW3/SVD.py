@@ -3,6 +3,7 @@ import scipy as sp
 from eigenvalues import eigs
 from bidiagonalize import bidiagonalize
 
+
 class SVD:
     def __init__(self, n_components=None, atol=1e-8):
         self.n_components = n_components
@@ -12,7 +13,7 @@ class SVD:
         return self
 
     def transform(self, X):
-        U, Sigma, V = self.__compute_svd(X)
+        U, Sigma, V, H = self.__compute_svd(X)
         print(Sigma)
         U, Sigma, V = self.fix_signs(U, Sigma, V)
         U, Sigma, V = self.sort_singular_values(U, Sigma, V)
@@ -26,7 +27,7 @@ class SVD:
             V[np.abs(V) < self.atol] = 0
             Sigma[np.abs(Sigma) < self.atol] = 0
 
-        return U, Sigma, V
+        return U, Sigma, V, H
 
     def fit_transform(self, X, y=None):
         self.fit(X)
@@ -50,7 +51,7 @@ class SVD:
         Sigma = R
         V = Q[:, P]
         
-        return U, Sigma, V
+        return U, Sigma, V, H
     
     def fix_signs(self,U, Sigma, V):
         # Ammettiamo che Sigma sia di shape (r, r), con r = min(m, n)
@@ -74,7 +75,7 @@ class SVD:
     
     
 
-"""
+
 # Test the SVD class
 if __name__ == "__main__":
     
@@ -93,7 +94,8 @@ if __name__ == "__main__":
     n_components = 4
 
     # *** My SVD *** #
-    U, Sigma, V = SVD(None).fit_transform(A)
+    U, Sigma, V, H = SVD(None).fit_transform(A)
+    print(H)
 
     print("\n*** My SVD *** ")
     print("\nMatrix U")
@@ -117,47 +119,10 @@ if __name__ == "__main__":
 
     # *** Builtin SVD *** #
 
-    svd = TruncatedSVD(n_components=n_components)
-    X_svd = svd.fit_transform(A)
-
-    print("\n*** Builtin SVD *** ")
-    print("\nMatrix U")
-    print(X_svd)
-    print("\nMatrix Sigma")
-    print(svd.singular_values_)
-    print("\nMatrix V.T")
-    print(svd.components_)
+    U, s, Vt = np.linalg.svd(A, full_matrices=True)
+    print (U)
+    print (s)
+    print (Vt)
 
     print()
-    """
-if __name__ == "__main__":
-    np.random.seed(42)
-
-    # Crea una matrice di test, dimensioni 6x4 per esempio
-    A = np.random.rand(6, 4)
-
-    print("\nMatrice A originale:\n", A)
-
-    # Istanzia e applica la tua SVD
-    my_svd = SVD(n_components=None)
-    U, Sigma, V = my_svd.fit_transform(A)
-
-    print("\nU:\n", U)
-    print("\nSigma:\n", Sigma)
-    print("\nV:\n", V)
-    print("\nV.T:\n", V.T)
-
-    # Ricostruisci la matrice: U @ Sigma @ V.T
-    # (Se Sigma è m x n, questa moltiplicazione funziona direttamente.
-    #  Se hai Sigma quadrata min(m,n), adattati di conseguenza.)
-    A_reconstructed = U @ Sigma @ V.T
-
-    print("\nMatrice ricostruita:\n", A_reconstructed)
-
-    # Verifica la differenza
-    diff = np.linalg.norm(A - A_reconstructed)
-    print("\nNorma della differenza (A - U Sigma V^T):", diff)
-
-    # Check con np.allclose
-    is_close = np.allclose(A, A_reconstructed, atol=1e-8)
-    print("Ricostruzione corretta entro tolleranza? ", is_close)
+ 
