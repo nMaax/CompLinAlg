@@ -16,6 +16,7 @@ class SVD:
         U, Sigma, V = self.__compute_svd(X)
         U, Sigma, V = self.fix_signs(U, Sigma, V)
         U, Sigma, V = self.sort_singular_values(U, Sigma, V)
+        
         if self.n_components:
             U = U[:, :self.n_components]
             Sigma = Sigma[:self.n_components, :self.n_components]        
@@ -72,9 +73,6 @@ class SVD:
         U_sorted = U[:, idx]
         V_sorted = V[:, idx]
         return U_sorted, Sigma_sorted, V_sorted
-    
-    
-
 
 # Test the SVD class
 if __name__ == "__main__":
@@ -118,10 +116,16 @@ if __name__ == "__main__":
 
     # *** Builtin SVD *** #
 
-    U, s, Vt = np.linalg.svd(A, full_matrices=True)
-    print (U)
-    print (s)
-    print (Vt)
+    print("\n*** Builtin SVD *** ")
+
+    U_np, Sigma_np, Vt_np = np.linalg.svd(A, full_matrices=True)
+    
+    print("\nMatrix U")
+    print(U_np)
+    print("\nMatrix Sigma")
+    print(np.diag(Sigma_np))
+    print("\nMatrix V.T")
+    print(Vt_np)
 
     print()
  
