@@ -1,4 +1,4 @@
-# Compiutational Linear Algebra  
+# Computational Linear Algebra: PCA, Spectral Clustering, and SVD for NLP  
 
 This repository contains final projects for the *Computational Linear Algebra for Large Scale Problems* course at Politecnico di Torino.  
 
