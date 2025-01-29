@@ -1,11 +1,21 @@
-# CompLinAlg
+# Compiutational Linear Algebra  
 
-Final projects for *Computational Linear Algebra for Large Scale Problems* course at Politecnico di Torino
+This repository contains final projects for the *Computational Linear Algebra for Large Scale Problems* course at Politecnico di Torino.  
 
-Reports of Homeworks can be found in:
+## Project Reports
 
-- `report_HW1.pdf` (PCA for customer analysis)
-- `report_HW2.pdf` (Spectral clustering with inverse power deflation)
-- `report_HW3.pdf` (SVD for NLP in Latent Semantic Analysis). 
+The reports for each homework assignment are available in PDF format:  
 
-All related code can be found in respective folders `HW1`, `HW2`, `HW3`.
+- **HW1:** [PCA for Customer Analysis](report_HW1.pdf)  
+- **HW2:** [Spectral Clustering with Inverse Power Deflation](report_HW2.pdf)  
+- **HW3:** [SVD for NLP in Latent Semantic Analysis](report_HW3.pdf)  
+
+## Code  
+
+The corresponding implementation for each homework can be found in the respective folders:  
+
+- **HW1:** `HW_PCA.ipynb`  
+- **HW2:** `HW2.m`  
+- **HW3:** `NLP.ipynb`  
+
+Run these files to reproduce the results.
